@@ -2,7 +2,13 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <meta http-equiv="refresh" content="0;url=/">
+    <title>Silverene North Corp</title>
+    <script>
+      // Only redirect if we came from a sub-page, not already at root
+      if (window.location.pathname !== '/') {
+        window.location.replace('/');
+      }
+    </script>
   </head>
   <body>
   </body>
