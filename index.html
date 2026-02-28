@@ -40,8 +40,8 @@
       section[class*="case-studies"], div[class*="case-studies"], #case-studies { display: none !important; }
       .border-dashed { display: none !important; }
       
-      /* Success message styles */
-      .sn-success-overlay {
+      /* Success/Error message styles */
+      .sn-message-overlay {
         position: fixed;
         top: 0;
         left: 0;
@@ -52,9 +52,9 @@
         align-items: center;
         justify-content: center;
         z-index: 99999;
-        animation: fadeIn 0.3s ease;
+        animation: snFadeIn 0.3s ease;
       }
-      .sn-success-box {
+      .sn-message-box {
         background: #fff;
         border-radius: 16px;
         padding: 48px;
@@ -63,10 +63,9 @@
         margin: 20px;
         box-shadow: 0 25px 50px rgba(0,0,0,0.3);
       }
-      .sn-success-icon {
+      .sn-message-icon {
         width: 80px;
         height: 80px;
-        background: #22c55e;
         border-radius: 50%;
         display: flex;
         align-items: center;
@@ -75,21 +74,24 @@
         font-size: 40px;
         color: white;
       }
-      .sn-success-title {
+      .sn-message-icon.success { background: #22c55e; }
+      .sn-message-icon.error { background: #ef4444; }
+      .sn-message-icon.loading { background: #c9a84c; }
+      .sn-message-title {
         font-family: 'Sora', sans-serif;
         font-size: 28px;
         font-weight: 700;
         color: #0d1b3e;
         margin-bottom: 12px;
       }
-      .sn-success-text {
+      .sn-message-text {
         font-family: 'DM Sans', sans-serif;
         font-size: 16px;
         color: #666;
         line-height: 1.6;
         margin-bottom: 24px;
       }
-      .sn-success-btn {
+      .sn-message-btn {
         background: #c9a84c;
         color: #0d1b3e;
         font-family: 'Sora', sans-serif;
@@ -100,12 +102,21 @@
         cursor: pointer;
         font-size: 16px;
       }
-      .sn-success-btn:hover {
-        opacity: 0.9;
+      .sn-message-btn:hover { opacity: 0.9; }
+      .sn-spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid rgba(255,255,255,0.3);
+        border-top-color: white;
+        border-radius: 50%;
+        animation: snSpin 1s linear infinite;
       }
-      @keyframes fadeIn {
+      @keyframes snFadeIn {
         from { opacity: 0; }
         to { opacity: 1; }
+      }
+      @keyframes snSpin {
+        to { transform: rotate(360deg); }
       }
     </style>
 
@@ -136,10 +147,15 @@
 
     <script>
     // ============================================================
-    // SILVERENE NORTH - CUSTOM SCRIPTS v4
+    // SILVERENE NORTH - CUSTOM SCRIPTS v5
     // ============================================================
 
     (function() {
+      
+      // ============================================================
+      // FORMSPREE ENDPOINT - Sends emails to info@silverenebusinessgroup.com
+      // ============================================================
+      var FORMSPREE_URL = 'https://formspree.io/f/xwpopwkq';
       
       // ============================================================
       // 1. HIDE SECTIONS VIA DOM MANIPULATION
@@ -235,10 +251,8 @@
       // 2. SCROLL TO FORM FOR CONTACT/FREE AI AUDIT BUTTONS
       // ============================================================
       function scrollToForm() {
-        // Find the form - try multiple selectors
         var form = document.querySelector('form');
         if (!form) {
-          // Look for form by finding the "Get My Free Audit" heading
           document.querySelectorAll('h2, h3, h4').forEach(function(el) {
             var text = (el.textContent || '').toLowerCase();
             if (text.indexOf('get my free audit') !== -1 || text.indexOf('free audit') !== -1) {
@@ -250,7 +264,7 @@
         if (form) {
           var rect = form.getBoundingClientRect();
           var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-          var targetY = rect.top + scrollTop - 50; // 50px from top
+          var targetY = rect.top + scrollTop - 50;
           
           window.scrollTo({
             top: targetY,
@@ -265,7 +279,6 @@
         var clickable = null;
         var node = target;
         
-        // Walk up to find anchor or button
         for (var i = 0; i < 6; i++) {
           if (!node) break;
           if (node.tagName === 'A' || node.tagName === 'BUTTON') {
@@ -279,11 +292,9 @@
         var text = (clickable.textContent || '').toLowerCase().trim();
         var href = (clickable.getAttribute('href') || '').toLowerCase();
 
-        // Check if this is a contact/audit link
         var isAuditLink = (
           text.indexOf('free ai audit') !== -1 ||
           text.indexOf('get your free') !== -1 ||
-          text.indexOf('get my free') !== -1 ||
           text.indexOf('book a free') !== -1 ||
           text.indexOf('request audit') !== -1
         );
@@ -299,41 +310,47 @@
           e.preventDefault();
           e.stopPropagation();
           
-          // If we're not on home page, navigate there first
           if (window.location.pathname !== '/' && window.location.pathname !== '/index.html') {
             window.location.href = '/#contact';
             return;
           }
           
-          // Scroll to form after a brief delay
           setTimeout(scrollToForm, 150);
           setTimeout(scrollToForm, 500);
         }
       }, true);
 
       // ============================================================
-      // 3. CONTACT FORM SUBMISSION - EMAIL TO info@silverenebusinessgroup.com
+      // 3. CONTACT FORM - SILENT SUBMISSION VIA FORMSPREE
       // ============================================================
       
-      function showSuccessMessage() {
-        // Create overlay
+      function showMessage(type, title, text) {
+        // Remove any existing overlay
+        var existing = document.querySelector('.sn-message-overlay');
+        if (existing) existing.remove();
+        
+        var iconContent = type === 'loading' ? '<div class="sn-spinner"></div>' : (type === 'success' ? '✓' : '✕');
+        var showButton = type !== 'loading';
+        
         var overlay = document.createElement('div');
-        overlay.className = 'sn-success-overlay';
+        overlay.className = 'sn-message-overlay';
         overlay.innerHTML = 
-          '<div class="sn-success-box">' +
-            '<div class="sn-success-icon">✓</div>' +
-            '<div class="sn-success-title">Request Submitted!</div>' +
-            '<div class="sn-success-text">Your email client should have opened with your audit request. If it didn\'t open, please email us directly at <strong>info@silverenebusinessgroup.com</strong></div>' +
-            '<button class="sn-success-btn" onclick="this.closest(\'.sn-success-overlay\').remove()">Got It</button>' +
+          '<div class="sn-message-box">' +
+            '<div class="sn-message-icon ' + type + '">' + iconContent + '</div>' +
+            '<div class="sn-message-title">' + title + '</div>' +
+            '<div class="sn-message-text">' + text + '</div>' +
+            (showButton ? '<button class="sn-message-btn" onclick="this.closest(\'.sn-message-overlay\').remove()">Got It</button>' : '') +
           '</div>';
         document.body.appendChild(overlay);
         
-        // Auto-close after 8 seconds
-        setTimeout(function() {
-          if (overlay.parentNode) {
-            overlay.remove();
-          }
-        }, 8000);
+        // Auto-close success after 6 seconds
+        if (type === 'success') {
+          setTimeout(function() {
+            if (overlay.parentNode) overlay.remove();
+          }, 6000);
+        }
+        
+        return overlay;
       }
       
       function handleFormSubmit(e) {
@@ -341,10 +358,12 @@
         e.stopPropagation();
         
         var form = e.target;
+        var btn = form.querySelector('button[type="submit"], button');
+        var originalBtnText = btn ? btn.textContent : '';
         
-        // Gather all form data
+        // Gather form data
         var inputs = form.querySelectorAll('input, textarea, select');
-        var emailLines = [];
+        var formData = {};
         var hasData = false;
         
         inputs.forEach(function(input) {
@@ -352,39 +371,24 @@
           if (!value) return;
           
           hasData = true;
-          var label = '';
+          var fieldName = input.name || input.placeholder || 'field';
+          fieldName = fieldName.replace(/[_-]/g, ' ').replace(/([A-Z])/g, ' $1').trim();
           
-          // Try to find label
-          var id = input.id || input.name;
-          if (id) {
-            var labelEl = form.querySelector('label[for="' + id + '"]');
-            if (labelEl) {
-              label = labelEl.textContent.replace('*', '').trim();
-            }
-          }
-          
-          // Check parent for label
-          if (!label) {
-            var parent = input.parentElement;
-            if (parent) {
-              var siblingLabel = parent.querySelector('label');
-              if (siblingLabel) {
-                label = siblingLabel.textContent.replace('*', '').trim();
-              }
-            }
-          }
-          
-          // Fallback to placeholder or name
-          if (!label && input.placeholder) {
-            label = input.placeholder;
-          }
-          if (!label && input.name) {
-            label = input.name.replace(/[_-]/g, ' ').replace(/([A-Z])/g, ' $1').trim();
-            label = label.charAt(0).toUpperCase() + label.slice(1);
-          }
-          
-          if (label) {
-            emailLines.push(label + ': ' + value);
+          // Clean up field names
+          if (fieldName.toLowerCase().indexOf('name') !== -1 && fieldName.toLowerCase().indexOf('business') === -1) {
+            formData['Name'] = value;
+          } else if (fieldName.toLowerCase().indexOf('email') !== -1) {
+            formData['Email'] = value;
+          } else if (fieldName.toLowerCase().indexOf('phone') !== -1) {
+            formData['Phone'] = value;
+          } else if (fieldName.toLowerCase().indexOf('business') !== -1 || fieldName.toLowerCase().indexOf('company') !== -1) {
+            formData['Business Name'] = value;
+          } else if (fieldName.toLowerCase().indexOf('city') !== -1 || fieldName.toLowerCase().indexOf('location') !== -1) {
+            formData['Location'] = value;
+          } else if (fieldName.toLowerCase().indexOf('message') !== -1 || input.tagName === 'TEXTAREA') {
+            formData['Message'] = value;
+          } else {
+            formData[fieldName] = value;
           }
         });
         
@@ -393,44 +397,82 @@
           return;
         }
         
-        // Create mailto link
-        var subject = encodeURIComponent('Free AI Audit Request - Silverene North Corp');
-        var body = encodeURIComponent(
-          'New AI Audit Request\n' +
-          '========================\n\n' +
-          emailLines.join('\n\n') +
-          '\n\n========================\n' +
-          'Submitted from: silverenebusinessgroup.com'
-        );
+        // Add metadata
+        formData['_subject'] = 'New AI Audit Request - Silverene North Corp';
+        formData['Submitted From'] = window.location.href;
+        formData['Submitted At'] = new Date().toLocaleString();
         
-        var mailtoLink = 'mailto:info@silverenebusinessgroup.com?subject=' + subject + '&body=' + body;
-        
-        // Open email client
-        window.location.href = mailtoLink;
-        
-        // Show success message
-        setTimeout(showSuccessMessage, 500);
-        
-        // Update button
-        var btn = form.querySelector('button[type="submit"], button');
+        // Show loading state
         if (btn) {
-          var originalText = btn.textContent;
-          var originalBg = btn.style.backgroundColor;
-          btn.textContent = '✓ Opening Email...';
-          btn.style.backgroundColor = '#22c55e';
-          setTimeout(function() {
-            btn.textContent = originalText;
-            btn.style.backgroundColor = originalBg;
-          }, 4000);
+          btn.textContent = 'Sending...';
+          btn.disabled = true;
         }
+        showMessage('loading', 'Sending Your Request...', 'Please wait while we submit your audit request.');
+        
+        // Send to Formspree
+        fetch(FORMSPREE_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        })
+        .then(function(response) {
+          if (response.ok) {
+            return response.json();
+          }
+          throw new Error('Network response was not ok');
+        })
+        .then(function(data) {
+          // Success!
+          showMessage(
+            'success',
+            'Request Submitted!',
+            'Thank you! We\'ve received your AI Audit request and will be in touch within 1 business day.<br><br>Check your email for a confirmation.'
+          );
+          
+          // Clear form
+          inputs.forEach(function(input) {
+            if (input.tagName === 'SELECT') {
+              input.selectedIndex = 0;
+            } else {
+              input.value = '';
+            }
+          });
+          
+          // Reset button
+          if (btn) {
+            btn.textContent = '✓ Sent!';
+            btn.style.backgroundColor = '#22c55e';
+            setTimeout(function() {
+              btn.textContent = originalBtnText;
+              btn.style.backgroundColor = '';
+              btn.disabled = false;
+            }, 3000);
+          }
+        })
+        .catch(function(error) {
+          console.error('Form submission error:', error);
+          showMessage(
+            'error',
+            'Submission Failed',
+            'Sorry, there was a problem submitting your request. Please try again or email us directly at <strong>info@silverenebusinessgroup.com</strong>'
+          );
+          
+          // Reset button
+          if (btn) {
+            btn.textContent = originalBtnText;
+            btn.disabled = false;
+          }
+        });
       }
       
-      // Intercept form submissions at capture phase
+      // Intercept form submissions
       document.addEventListener('submit', function(e) {
         var form = e.target;
         if (form.tagName !== 'FORM') return;
         
-        // Check if this looks like the contact/audit form
         var formText = (form.textContent || '').toLowerCase();
         var hasAuditButton = formText.indexOf('free audit') !== -1 || formText.indexOf('get my') !== -1;
         var hasNameField = form.querySelector('input[placeholder*="name" i], input[name*="name" i]');
@@ -441,13 +483,12 @@
         }
       }, true);
 
-      // Also intercept button clicks within forms (in case React prevents submit event)
+      // Also intercept button clicks
       document.addEventListener('click', function(e) {
         var target = e.target;
         var btn = null;
         var node = target;
         
-        // Find the button
         for (var i = 0; i < 4; i++) {
           if (!node) break;
           if (node.tagName === 'BUTTON') {
@@ -460,8 +501,7 @@
         
         var btnText = (btn.textContent || '').toLowerCase();
         
-        // Check if this is the audit submit button
-        if (btnText.indexOf('get my free audit') !== -1 || btnText.indexOf('submit') !== -1) {
+        if (btnText.indexOf('get my free audit') !== -1) {
           var form = btn.closest('form');
           if (form) {
             e.preventDefault();
