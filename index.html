@@ -40,19 +40,73 @@
       section[class*="case-studies"], div[class*="case-studies"], #case-studies { display: none !important; }
       .border-dashed { display: none !important; }
       
-      /* Hide "Meet the Founder" section */
-      /* Target the section containing "Meet the Founder" heading */
-      section:has(h2:where(:is([class*="founder"], [class*="team"]))),
-      div:has(> h2:where(:is([class*="founder"], [class*="team"]))) { display: none !important; }
-      
-      /* Hide Toronto Office and Dubai Inquiries cards */
-      /* These are the cards with "CA" and "AE" badges showing office locations */
-      div[class*="grid"]:has(> div:has(h3:where(:is([class*="office"], [class*="toronto"])))),
-      div:has(> div > h3:where(:is([class*="toronto"], [class*="dubai"]))) { }
-      
-      /* Hide Book a Call section */
-      div:has(> h3:where(:is([class*="book"], [class*="call"]))),
-      section:has(h3:where(:is([class*="book"], [class*="call"]))) { }
+      /* Success message styles */
+      .sn-success-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(13, 27, 62, 0.95);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 99999;
+        animation: fadeIn 0.3s ease;
+      }
+      .sn-success-box {
+        background: #fff;
+        border-radius: 16px;
+        padding: 48px;
+        text-align: center;
+        max-width: 500px;
+        margin: 20px;
+        box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+      }
+      .sn-success-icon {
+        width: 80px;
+        height: 80px;
+        background: #22c55e;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 24px;
+        font-size: 40px;
+        color: white;
+      }
+      .sn-success-title {
+        font-family: 'Sora', sans-serif;
+        font-size: 28px;
+        font-weight: 700;
+        color: #0d1b3e;
+        margin-bottom: 12px;
+      }
+      .sn-success-text {
+        font-family: 'DM Sans', sans-serif;
+        font-size: 16px;
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 24px;
+      }
+      .sn-success-btn {
+        background: #c9a84c;
+        color: #0d1b3e;
+        font-family: 'Sora', sans-serif;
+        font-weight: 600;
+        padding: 14px 32px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+      }
+      .sn-success-btn:hover {
+        opacity: 0.9;
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
     </style>
 
     <script type="application/ld+json">
@@ -82,10 +136,11 @@
 
     <script>
     // ============================================================
-    // SILVERENE NORTH - CUSTOM SCRIPTS
+    // SILVERENE NORTH - CUSTOM SCRIPTS v4
     // ============================================================
 
     (function() {
+      
       // ============================================================
       // 1. HIDE SECTIONS VIA DOM MANIPULATION
       // ============================================================
@@ -94,7 +149,6 @@
         document.querySelectorAll('h2, h3').forEach(function(el) {
           var text = (el.textContent || '').toLowerCase();
           if (text.indexOf('meet the founder') !== -1 || text.indexOf('the team') !== -1) {
-            // Walk up to find the section container
             var parent = el.parentElement;
             for (var i = 0; i < 8; i++) {
               if (!parent) break;
@@ -115,7 +169,6 @@
             var parent = el.parentElement;
             for (var i = 0; i < 6; i++) {
               if (!parent) break;
-              // Look for the card container (usually has border/shadow)
               if (parent.className && (parent.className.indexOf('rounded') !== -1 || parent.className.indexOf('border') !== -1 || parent.className.indexOf('shadow') !== -1)) {
                 parent.style.display = 'none';
                 break;
@@ -170,7 +223,7 @@
         setTimeout(hideElements, 3000);
       }
 
-      // Also run on any DOM changes (React re-renders)
+      // Also run on any DOM changes
       var hideObserver = new MutationObserver(function() {
         setTimeout(hideElements, 100);
       });
@@ -179,152 +232,244 @@
       }, 2000);
 
       // ============================================================
-      // 2. FIX SCROLL POSITION FOR CONTACT/FREE AI AUDIT BUTTONS
+      // 2. SCROLL TO FORM FOR CONTACT/FREE AI AUDIT BUTTONS
       // ============================================================
+      function scrollToForm() {
+        // Find the form - try multiple selectors
+        var form = document.querySelector('form');
+        if (!form) {
+          // Look for form by finding the "Get My Free Audit" heading
+          document.querySelectorAll('h2, h3, h4').forEach(function(el) {
+            var text = (el.textContent || '').toLowerCase();
+            if (text.indexOf('get my free audit') !== -1 || text.indexOf('free audit') !== -1) {
+              form = el.closest('section') || el.closest('div');
+            }
+          });
+        }
+        
+        if (form) {
+          var rect = form.getBoundingClientRect();
+          var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+          var targetY = rect.top + scrollTop - 50; // 50px from top
+          
+          window.scrollTo({
+            top: targetY,
+            behavior: 'smooth'
+          });
+        }
+      }
+
+      // Intercept all Free AI Audit / Contact clicks
       document.addEventListener('click', function(e) {
         var target = e.target;
-        var anchor = null;
+        var clickable = null;
         var node = target;
         
         // Walk up to find anchor or button
-        for (var i = 0; i < 5; i++) {
+        for (var i = 0; i < 6; i++) {
           if (!node) break;
           if (node.tagName === 'A' || node.tagName === 'BUTTON') {
-            anchor = node;
+            clickable = node;
             break;
           }
           node = node.parentElement;
         }
-        if (!anchor) return;
+        if (!clickable) return;
 
-        var text = (anchor.textContent || '').toLowerCase().trim();
-        var href = anchor.getAttribute('href') || '';
+        var text = (clickable.textContent || '').toLowerCase().trim();
+        var href = (clickable.getAttribute('href') || '').toLowerCase();
 
         // Check if this is a contact/audit link
+        var isAuditLink = (
+          text.indexOf('free ai audit') !== -1 ||
+          text.indexOf('get your free') !== -1 ||
+          text.indexOf('get my free') !== -1 ||
+          text.indexOf('book a free') !== -1 ||
+          text.indexOf('request audit') !== -1
+        );
+        
         var isContactLink = (
           href.indexOf('#contact') !== -1 ||
-          href.indexOf('/contact') !== -1 ||
-          text.indexOf('free ai audit') !== -1 ||
-          text.indexOf('contact') !== -1 ||
-          text.indexOf('get your free') !== -1 ||
-          text.indexOf('get my free audit') !== -1
+          href === '/contact' ||
+          href === '/#contact' ||
+          (text === 'contact' && href.indexOf('#') !== -1)
         );
 
-        if (isContactLink) {
+        if (isAuditLink || isContactLink) {
           e.preventDefault();
           e.stopPropagation();
           
-          // Wait a moment for React navigation, then scroll to form
-          setTimeout(function() {
-            // Find the form element
-            var form = document.querySelector('form');
-            if (form) {
-              var formTop = form.getBoundingClientRect().top + window.pageYOffset;
-              window.scrollTo({
-                top: formTop - 100, // 100px offset from top
-                behavior: 'smooth'
-              });
-            } else {
-              // Fallback: scroll to bottom of page
-              window.scrollTo({
-                top: document.body.scrollHeight,
-                behavior: 'smooth'
-              });
-            }
-          }, 100);
-
-          // Also trigger React navigation if it's a hash link
-          if (href.indexOf('#contact') !== -1) {
-            window.location.hash = '#contact';
+          // If we're not on home page, navigate there first
+          if (window.location.pathname !== '/' && window.location.pathname !== '/index.html') {
+            window.location.href = '/#contact';
+            return;
           }
+          
+          // Scroll to form after a brief delay
+          setTimeout(scrollToForm, 150);
+          setTimeout(scrollToForm, 500);
         }
       }, true);
 
       // ============================================================
-      // 3. MAKE CONTACT FORM WORK (EMAIL TO info@silverenebusinessgroup.com)
+      // 3. CONTACT FORM SUBMISSION - EMAIL TO info@silverenebusinessgroup.com
       // ============================================================
-      function setupFormHandler() {
-        var forms = document.querySelectorAll('form');
-        forms.forEach(function(form) {
-          // Check if this looks like the contact form
-          var hasNameField = form.querySelector('input[name*="name"], input[placeholder*="name"]');
-          var hasEmailField = form.querySelector('input[name*="email"], input[type="email"], input[placeholder*="email"]');
+      
+      function showSuccessMessage() {
+        // Create overlay
+        var overlay = document.createElement('div');
+        overlay.className = 'sn-success-overlay';
+        overlay.innerHTML = 
+          '<div class="sn-success-box">' +
+            '<div class="sn-success-icon">✓</div>' +
+            '<div class="sn-success-title">Request Submitted!</div>' +
+            '<div class="sn-success-text">Your email client should have opened with your audit request. If it didn\'t open, please email us directly at <strong>info@silverenebusinessgroup.com</strong></div>' +
+            '<button class="sn-success-btn" onclick="this.closest(\'.sn-success-overlay\').remove()">Got It</button>' +
+          '</div>';
+        document.body.appendChild(overlay);
+        
+        // Auto-close after 8 seconds
+        setTimeout(function() {
+          if (overlay.parentNode) {
+            overlay.remove();
+          }
+        }, 8000);
+      }
+      
+      function handleFormSubmit(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        var form = e.target;
+        
+        // Gather all form data
+        var inputs = form.querySelectorAll('input, textarea, select');
+        var emailLines = [];
+        var hasData = false;
+        
+        inputs.forEach(function(input) {
+          var value = (input.value || '').trim();
+          if (!value) return;
           
-          if (hasNameField || hasEmailField) {
-            form.addEventListener('submit', function(e) {
-              e.preventDefault();
-              
-              // Gather form data
-              var formData = new FormData(form);
-              var inputs = form.querySelectorAll('input, textarea, select');
-              var emailBody = [];
-              
-              inputs.forEach(function(input) {
-                var label = '';
-                var value = input.value || '';
-                
-                // Try to get label from placeholder, name, or preceding label element
-                if (input.placeholder) {
-                  label = input.placeholder;
-                } else if (input.name) {
-                  label = input.name.replace(/[_-]/g, ' ').replace(/([A-Z])/g, ' $1').trim();
-                }
-                
-                // Also check for label element
-                var labelEl = form.querySelector('label[for="' + input.id + '"]');
-                if (labelEl) {
-                  label = labelEl.textContent.replace('*', '').trim();
-                }
-                
-                // Check preceding element for label text
-                var prev = input.previousElementSibling;
-                if (prev && prev.tagName === 'LABEL') {
-                  label = prev.textContent.replace('*', '').trim();
-                }
-                
-                if (value && label) {
-                  emailBody.push(label + ': ' + value);
-                } else if (value && input.name) {
-                  emailBody.push(input.name + ': ' + value);
-                }
-              });
-              
-              // Create mailto link
-              var subject = encodeURIComponent('Free AI Audit Request - Silverene North');
-              var body = encodeURIComponent(emailBody.join('\n\n'));
-              var mailtoLink = 'mailto:info@silverenebusinessgroup.com?subject=' + subject + '&body=' + body;
-              
-              // Open email client
-              window.location.href = mailtoLink;
-              
-              // Show success message
-              var btn = form.querySelector('button[type="submit"]');
-              if (btn) {
-                var originalText = btn.textContent;
-                btn.textContent = 'Opening Email Client...';
-                btn.style.backgroundColor = '#22c55e';
-                setTimeout(function() {
-                  btn.textContent = originalText;
-                  btn.style.backgroundColor = '';
-                }, 3000);
+          hasData = true;
+          var label = '';
+          
+          // Try to find label
+          var id = input.id || input.name;
+          if (id) {
+            var labelEl = form.querySelector('label[for="' + id + '"]');
+            if (labelEl) {
+              label = labelEl.textContent.replace('*', '').trim();
+            }
+          }
+          
+          // Check parent for label
+          if (!label) {
+            var parent = input.parentElement;
+            if (parent) {
+              var siblingLabel = parent.querySelector('label');
+              if (siblingLabel) {
+                label = siblingLabel.textContent.replace('*', '').trim();
               }
-            });
+            }
+          }
+          
+          // Fallback to placeholder or name
+          if (!label && input.placeholder) {
+            label = input.placeholder;
+          }
+          if (!label && input.name) {
+            label = input.name.replace(/[_-]/g, ' ').replace(/([A-Z])/g, ' $1').trim();
+            label = label.charAt(0).toUpperCase() + label.slice(1);
+          }
+          
+          if (label) {
+            emailLines.push(label + ': ' + value);
           }
         });
+        
+        if (!hasData) {
+          alert('Please fill out the form before submitting.');
+          return;
+        }
+        
+        // Create mailto link
+        var subject = encodeURIComponent('Free AI Audit Request - Silverene North Corp');
+        var body = encodeURIComponent(
+          'New AI Audit Request\n' +
+          '========================\n\n' +
+          emailLines.join('\n\n') +
+          '\n\n========================\n' +
+          'Submitted from: silverenebusinessgroup.com'
+        );
+        
+        var mailtoLink = 'mailto:info@silverenebusinessgroup.com?subject=' + subject + '&body=' + body;
+        
+        // Open email client
+        window.location.href = mailtoLink;
+        
+        // Show success message
+        setTimeout(showSuccessMessage, 500);
+        
+        // Update button
+        var btn = form.querySelector('button[type="submit"], button');
+        if (btn) {
+          var originalText = btn.textContent;
+          var originalBg = btn.style.backgroundColor;
+          btn.textContent = '✓ Opening Email...';
+          btn.style.backgroundColor = '#22c55e';
+          setTimeout(function() {
+            btn.textContent = originalText;
+            btn.style.backgroundColor = originalBg;
+          }, 4000);
+        }
       }
+      
+      // Intercept form submissions at capture phase
+      document.addEventListener('submit', function(e) {
+        var form = e.target;
+        if (form.tagName !== 'FORM') return;
+        
+        // Check if this looks like the contact/audit form
+        var formText = (form.textContent || '').toLowerCase();
+        var hasAuditButton = formText.indexOf('free audit') !== -1 || formText.indexOf('get my') !== -1;
+        var hasNameField = form.querySelector('input[placeholder*="name" i], input[name*="name" i]');
+        var hasEmailField = form.querySelector('input[type="email"], input[placeholder*="email" i]');
+        
+        if (hasAuditButton || (hasNameField && hasEmailField)) {
+          handleFormSubmit(e);
+        }
+      }, true);
 
-      // Run form setup after React renders
-      setTimeout(setupFormHandler, 1000);
-      setTimeout(setupFormHandler, 2500);
-      setTimeout(setupFormHandler, 5000);
-
-      // Also run on DOM changes
-      var formObserver = new MutationObserver(function() {
-        setTimeout(setupFormHandler, 200);
-      });
-      setTimeout(function() {
-        formObserver.observe(document.body, { childList: true, subtree: true });
-      }, 2000);
+      // Also intercept button clicks within forms (in case React prevents submit event)
+      document.addEventListener('click', function(e) {
+        var target = e.target;
+        var btn = null;
+        var node = target;
+        
+        // Find the button
+        for (var i = 0; i < 4; i++) {
+          if (!node) break;
+          if (node.tagName === 'BUTTON') {
+            btn = node;
+            break;
+          }
+          node = node.parentElement;
+        }
+        if (!btn) return;
+        
+        var btnText = (btn.textContent || '').toLowerCase();
+        
+        // Check if this is the audit submit button
+        if (btnText.indexOf('get my free audit') !== -1 || btnText.indexOf('submit') !== -1) {
+          var form = btn.closest('form');
+          if (form) {
+            e.preventDefault();
+            e.stopPropagation();
+            handleFormSubmit({ target: form, preventDefault: function(){}, stopPropagation: function(){} });
+          }
+        }
+      }, true);
 
       // ============================================================
       // 4. NAVIGATION INTERCEPTOR FOR BLOG & SERVICES
