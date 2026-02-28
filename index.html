@@ -67,19 +67,21 @@
 
     <script>
     // ============================================================
-    // BLOG ARTICLE INTERCEPTOR
+    // BLOG ARTICLE INTERCEPTOR v2
     // Uses capture phase (fires BEFORE React Router) to redirect
     // "Read More" / "Read Article" clicks to static HTML pages.
     // ============================================================
     (function () {
+      // Article routes - each with multiple keyword matches
       var routes = [
-        { words: ['ai search visibility', 'what is ai search'], url: '/ai-search-visibility.html' },
-        { words: ['chatgpt', 'competitors'], url: '/chatgpt-recommends-competitors.html' },
-        { words: ['ai guilt', '5 signs'], url: '/ai-guilt.html' },
-        { words: ['google ai overviews', 'ai overviews'], url: '/google-ai-overviews.html' }
+        { words: ['ai search visibility', 'what is ai search', 'why your business needs'], url: '/ai-search-visibility.html' },
+        { words: ['chatgpt', 'competitors', 'recommending your'], url: '/chatgpt-recommends-competitors.html' },
+        { words: ['ai guilt', '5 signs', 'five signs'], url: '/ai-guilt.html' },
+        { words: ['google ai overviews', 'ai overviews', 'business owners need to know'], url: '/google-ai-overviews.html' }
       ];
 
       function matchRoute(text) {
+        if (!text) return null;
         var t = text.toLowerCase();
         for (var i = 0; i < routes.length; i++) {
           for (var j = 0; j < routes[i].words.length; j++) {
@@ -89,46 +91,107 @@
         return null;
       }
 
-      // Walk up the DOM from the clicked element to find a blog card heading
+      // Find the blog card container and extract title text
+      // Strategy: Walk up to find a card-like container, then search for title text
       function getCardText(el) {
         var node = el;
-        for (var depth = 0; depth < 10; depth++) {
+        var allText = '';
+        
+        // Walk up the DOM to find a card container (look for common patterns)
+        for (var depth = 0; depth < 15; depth++) {
           if (!node || node === document.body) break;
-          // Look for any heading or strong text inside this container
-          var headings = node.querySelectorAll('h1,h2,h3,h4,h5,h6');
+          
+          // Strategy 1: Look for heading tags
+          var headings = node.querySelectorAll('h1, h2, h3, h4, h5, h6');
           for (var k = 0; k < headings.length; k++) {
             var txt = (headings[k].textContent || '').trim();
-            if (txt.length > 8) return txt;
+            if (txt.length > 15) {
+              var url = matchRoute(txt);
+              if (url) return txt;
+            }
           }
+          
+          // Strategy 2: Look for elements with title/heading-like classes
+          var titleElements = node.querySelectorAll('[class*="title"], [class*="heading"], [class*="headline"]');
+          for (var m = 0; m < titleElements.length; m++) {
+            var txt2 = (titleElements[m].textContent || '').trim();
+            if (txt2.length > 15 && txt2.length < 200) {
+              var url2 = matchRoute(txt2);
+              if (url2) return txt2;
+            }
+          }
+          
+          // Strategy 3: Look for any text-heavy element (p, span, div) that matches routes
+          var textElements = node.querySelectorAll('p, span, div');
+          for (var n = 0; n < textElements.length; n++) {
+            // Only check direct text content, not nested
+            var el2 = textElements[n];
+            var directText = '';
+            for (var c = 0; c < el2.childNodes.length; c++) {
+              if (el2.childNodes[c].nodeType === 3) { // Text node
+                directText += el2.childNodes[c].textContent;
+              }
+            }
+            directText = directText.trim();
+            if (directText.length > 15 && directText.length < 200) {
+              var url3 = matchRoute(directText);
+              if (url3) return directText;
+            }
+            // Also check full text content
+            var fullText = (el2.textContent || '').trim();
+            if (fullText.length > 15 && fullText.length < 200) {
+              var url4 = matchRoute(fullText);
+              if (url4) return fullText;
+            }
+          }
+          
+          // Collect all text from this node level for fallback matching
+          allText += ' ' + (node.textContent || '');
+          
           node = node.parentElement;
         }
-        return '';
+        
+        // Fallback: try to match against all collected text
+        return allText;
+      }
+
+      // Check if link text indicates a blog "Read More" style link
+      function isReadMoreLink(text) {
+        var t = (text || '').trim().toLowerCase();
+        return (
+          t === 'read more' ||
+          t === 'read more →' ||
+          t === 'read more→' ||
+          t === 'read article' ||
+          t === 'read article →' ||
+          t === 'read article→' ||
+          t.indexOf('read more') === 0 ||
+          t.indexOf('read article') === 0
+        );
       }
 
       // CAPTURE PHASE — fires before React's synthetic event system
       document.addEventListener('click', function (e) {
         var target = e.target;
 
-        // Walk up to find the anchor tag
+        // Walk up to find the anchor tag (might click on span inside anchor)
         var anchor = null;
         var node = target;
-        for (var i = 0; i < 5; i++) {
+        for (var i = 0; i < 8; i++) {
           if (!node || node === document.body) break;
           if (node.tagName === 'A') { anchor = node; break; }
+          // Also check for button elements that might navigate
+          if (node.tagName === 'BUTTON') { anchor = node; break; }
           node = node.parentElement;
         }
         if (!anchor) return;
 
-        var linkText = (anchor.textContent || anchor.innerText || '').trim().toLowerCase();
-        var isReadLink = (
-          linkText === 'read more' ||
-          linkText === 'read more \u2192' ||
-          linkText === 'read article' ||
-          linkText === 'read article \u2192' ||
-          linkText === '\u2190 read article'
-        );
-        if (!isReadLink) return;
+        // Get all text content from the anchor (handles nested spans/icons)
+        var linkText = (anchor.textContent || anchor.innerText || '').trim();
+        
+        if (!isReadMoreLink(linkText)) return;
 
+        // Find the article title from the card
         var cardText = getCardText(anchor);
         var url = matchRoute(cardText);
 
