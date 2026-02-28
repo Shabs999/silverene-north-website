@@ -102,5 +102,95 @@
   </head>
   <body>
     <div id="root"></div>
+
+    <!-- Blog article link interceptor -->
+    <script>
+      // Map of blog article slugs/keywords to their HTML pages
+      var blogRoutes = [
+        { keywords: ['ai-search-visibility', 'ai search visibility', 'what is ai search'], url: '/blog/ai-search-visibility.html' },
+        { keywords: ['chatgpt-recommends', 'competitors', 'recommending your competitors', 'chatgpt recommend'], url: '/blog/chatgpt-recommends-competitors.html' },
+        { keywords: ['ai-guilt', 'ai guilt', '5 signs'], url: '/blog/ai-guilt.html' },
+        { keywords: ['google-ai-overviews', 'google ai overviews', 'ai overviews'], url: '/blog/google-ai-overviews.html' }
+      ];
+
+      function matchBlogRoute(href, text) {
+        var combined = ((href || '') + ' ' + (text || '')).toLowerCase();
+        for (var i = 0; i < blogRoutes.length; i++) {
+          var route = blogRoutes[i];
+          for (var j = 0; j < route.keywords.length; j++) {
+            if (combined.indexOf(route.keywords[j]) !== -1) {
+              return route.url;
+            }
+          }
+        }
+        return null;
+      }
+
+      // Watch for React rendering the blog section, then intercept clicks
+      document.addEventListener('click', function(e) {
+        var el = e.target;
+        // Walk up to find an anchor tag
+        while (el && el.tagName !== 'A' && el !== document.body) {
+          el = el.parentElement;
+        }
+        if (!el || el.tagName !== 'A') return;
+
+        var href = el.getAttribute('href') || '';
+        var text = el.innerText || el.textContent || '';
+
+        // Look for read more / read article links
+        var isReadLink = /read\s*(more|article)/i.test(text) || /\/blog\//i.test(href) || /article/i.test(href);
+        if (!isReadLink) return;
+
+        // Find closest article card container and get its heading text
+        var card = el.closest('[class]');
+        var heading = '';
+        if (card) {
+          var h = card.querySelector('h1,h2,h3,h4,h5,h6');
+          if (h) heading = h.innerText || h.textContent || '';
+        }
+
+        var destination = matchBlogRoute(href, text + ' ' + heading);
+        if (destination) {
+          e.preventDefault();
+          e.stopPropagation();
+          window.location.href = destination;
+        }
+      }, true);
+
+      // Also intercept the featured "Read Article" button specifically
+      // by observing DOM mutations to patch hrefs once React renders
+      var patched = false;
+      var observer = new MutationObserver(function() {
+        if (patched) return;
+        var allLinks = document.querySelectorAll('a');
+        allLinks.forEach(function(a) {
+          var text = (a.innerText || a.textContent || '').trim().toLowerCase();
+          if (text === 'read article' || text === 'read article →' || text.indexOf('read article') === 0) {
+            var card = a.closest('[class]');
+            var heading = '';
+            if (card) {
+              var h = card.querySelector('h1,h2,h3,h4,h5,h6');
+              if (h) heading = h.innerText || h.textContent || '';
+            }
+            var dest = matchBlogRoute('', heading);
+            if (dest) { a.setAttribute('href', dest); a.removeAttribute('target'); }
+          }
+          if (text === 'read more' || text === 'read more →') {
+            var card2 = a.closest('[class]');
+            var heading2 = '';
+            if (card2) {
+              var h2 = card2.querySelector('h1,h2,h3,h4,h5,h6');
+              if (h2) heading2 = h2.innerText || h2.textContent || '';
+            }
+            var dest2 = matchBlogRoute('', heading2);
+            if (dest2) { a.setAttribute('href', dest2); a.removeAttribute('target'); }
+          }
+        });
+      });
+      observer.observe(document.body, { childList: true, subtree: true });
+      // Stop observing after React has fully rendered
+      setTimeout(function() { patched = true; observer.disconnect(); }, 5000);
+    </script>
   </body>
 </html>
