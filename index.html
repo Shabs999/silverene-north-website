@@ -147,7 +147,7 @@
 
     <script>
     // ============================================================
-    // SILVERENE NORTH - CUSTOM SCRIPTS v5
+    // SILVERENE NORTH - CUSTOM SCRIPTS v6
     // ============================================================
 
     (function() {
@@ -248,19 +248,10 @@
       }, 2000);
 
       // ============================================================
-      // 2. SCROLL TO FORM FOR CONTACT/FREE AI AUDIT BUTTONS
+      // 2. CONTACT & FREE AI AUDIT NAVIGATION - SCROLL TO FORM
       // ============================================================
       function scrollToForm() {
         var form = document.querySelector('form');
-        if (!form) {
-          document.querySelectorAll('h2, h3, h4').forEach(function(el) {
-            var text = (el.textContent || '').toLowerCase();
-            if (text.indexOf('get my free audit') !== -1 || text.indexOf('free audit') !== -1) {
-              form = el.closest('section') || el.closest('div');
-            }
-          });
-        }
-        
         if (form) {
           var rect = form.getBoundingClientRect();
           var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
@@ -270,62 +261,79 @@
             top: targetY,
             behavior: 'smooth'
           });
+          return true;
         }
+        return false;
       }
 
-      // Intercept all Free AI Audit / Contact clicks
+      // Check if element or its text indicates a contact/audit link
+      function isContactOrAuditLink(element) {
+        var text = (element.textContent || '').toLowerCase().trim();
+        var href = (element.getAttribute('href') || '').toLowerCase();
+        
+        // Check text content
+        if (text === 'contact') return true;
+        if (text.indexOf('free ai audit') !== -1) return true;
+        if (text.indexOf('get your free') !== -1) return true;
+        if (text.indexOf('book a free') !== -1) return true;
+        if (text.indexOf('request audit') !== -1) return true;
+        
+        // Check href
+        if (href === '#contact') return true;
+        if (href === '/#contact') return true;
+        if (href === '/contact') return true;
+        if (href.indexOf('#contact') !== -1) return true;
+        
+        return false;
+      }
+
+      // Main click interceptor for Contact/Audit links - CAPTURE PHASE
       document.addEventListener('click', function(e) {
         var target = e.target;
         var clickable = null;
         var node = target;
         
-        for (var i = 0; i < 6; i++) {
-          if (!node) break;
+        // Walk up to find the clickable element
+        for (var i = 0; i < 8; i++) {
+          if (!node || node === document.body) break;
           if (node.tagName === 'A' || node.tagName === 'BUTTON') {
             clickable = node;
             break;
           }
           node = node.parentElement;
         }
-        if (!clickable) return;
-
-        var text = (clickable.textContent || '').toLowerCase().trim();
-        var href = (clickable.getAttribute('href') || '').toLowerCase();
-
-        var isAuditLink = (
-          text.indexOf('free ai audit') !== -1 ||
-          text.indexOf('get your free') !== -1 ||
-          text.indexOf('book a free') !== -1 ||
-          text.indexOf('request audit') !== -1
-        );
         
-        var isContactLink = (
-          href.indexOf('#contact') !== -1 ||
-          href === '/contact' ||
-          href === '/#contact' ||
-          (text === 'contact' && href.indexOf('#') !== -1)
-        );
-
-        if (isAuditLink || isContactLink) {
+        if (!clickable) return;
+        
+        // Check if this is a contact or audit link
+        if (isContactOrAuditLink(clickable)) {
+          // BLOCK React Router completely
           e.preventDefault();
           e.stopPropagation();
+          e.stopImmediatePropagation();
           
-          if (window.location.pathname !== '/' && window.location.pathname !== '/index.html') {
+          // If not on home page, navigate there
+          var path = window.location.pathname;
+          if (path !== '/' && path !== '/index.html' && path !== '') {
             window.location.href = '/#contact';
-            return;
+            return false;
           }
           
-          setTimeout(scrollToForm, 150);
-          setTimeout(scrollToForm, 500);
+          // Scroll to form immediately and with delays (for React render)
+          scrollToForm();
+          setTimeout(scrollToForm, 100);
+          setTimeout(scrollToForm, 300);
+          setTimeout(scrollToForm, 600);
+          
+          return false;
         }
-      }, true);
+      }, true); // CAPTURE PHASE - fires before React
 
       // ============================================================
       // 3. CONTACT FORM - SILENT SUBMISSION VIA FORMSPREE
       // ============================================================
       
       function showMessage(type, title, text) {
-        // Remove any existing overlay
         var existing = document.querySelector('.sn-message-overlay');
         if (existing) existing.remove();
         
@@ -343,7 +351,6 @@
           '</div>';
         document.body.appendChild(overlay);
         
-        // Auto-close success after 6 seconds
         if (type === 'success') {
           setTimeout(function() {
             if (overlay.parentNode) overlay.remove();
@@ -361,7 +368,6 @@
         var btn = form.querySelector('button[type="submit"], button');
         var originalBtnText = btn ? btn.textContent : '';
         
-        // Gather form data
         var inputs = form.querySelectorAll('input, textarea, select');
         var formData = {};
         var hasData = false;
@@ -374,7 +380,6 @@
           var fieldName = input.name || input.placeholder || 'field';
           fieldName = fieldName.replace(/[_-]/g, ' ').replace(/([A-Z])/g, ' $1').trim();
           
-          // Clean up field names
           if (fieldName.toLowerCase().indexOf('name') !== -1 && fieldName.toLowerCase().indexOf('business') === -1) {
             formData['Name'] = value;
           } else if (fieldName.toLowerCase().indexOf('email') !== -1) {
@@ -397,19 +402,16 @@
           return;
         }
         
-        // Add metadata
         formData['_subject'] = 'New AI Audit Request - Silverene North Corp';
         formData['Submitted From'] = window.location.href;
         formData['Submitted At'] = new Date().toLocaleString();
         
-        // Show loading state
         if (btn) {
           btn.textContent = 'Sending...';
           btn.disabled = true;
         }
         showMessage('loading', 'Sending Your Request...', 'Please wait while we submit your audit request.');
         
-        // Send to Formspree
         fetch(FORMSPREE_URL, {
           method: 'POST',
           headers: {
@@ -425,14 +427,12 @@
           throw new Error('Network response was not ok');
         })
         .then(function(data) {
-          // Success!
           showMessage(
             'success',
             'Request Submitted!',
             'Thank you! We\'ve received your AI Audit request and will be in touch within 1 business day.<br><br>Check your email for a confirmation.'
           );
           
-          // Clear form
           inputs.forEach(function(input) {
             if (input.tagName === 'SELECT') {
               input.selectedIndex = 0;
@@ -441,7 +441,6 @@
             }
           });
           
-          // Reset button
           if (btn) {
             btn.textContent = '✓ Sent!';
             btn.style.backgroundColor = '#22c55e';
@@ -460,7 +459,6 @@
             'Sorry, there was a problem submitting your request. Please try again or email us directly at <strong>info@silverenebusinessgroup.com</strong>'
           );
           
-          // Reset button
           if (btn) {
             btn.textContent = originalBtnText;
             btn.disabled = false;
