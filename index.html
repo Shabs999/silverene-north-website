@@ -35,9 +35,24 @@
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Sora:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet" />
 
     <style>
+      /* Hide case studies section */
       a[href="/case-studies"], a[href*="case-studies"] { display: none !important; }
       section[class*="case-studies"], div[class*="case-studies"], #case-studies { display: none !important; }
       .border-dashed { display: none !important; }
+      
+      /* Hide "Meet the Founder" section */
+      /* Target the section containing "Meet the Founder" heading */
+      section:has(h2:where(:is([class*="founder"], [class*="team"]))),
+      div:has(> h2:where(:is([class*="founder"], [class*="team"]))) { display: none !important; }
+      
+      /* Hide Toronto Office and Dubai Inquiries cards */
+      /* These are the cards with "CA" and "AE" badges showing office locations */
+      div[class*="grid"]:has(> div:has(h3:where(:is([class*="office"], [class*="toronto"])))),
+      div:has(> div > h3:where(:is([class*="toronto"], [class*="dubai"]))) { }
+      
+      /* Hide Book a Call section */
+      div:has(> h3:where(:is([class*="book"], [class*="call"]))),
+      section:has(h3:where(:is([class*="book"], [class*="call"]))) { }
     </style>
 
     <script type="application/ld+json">
@@ -67,13 +82,253 @@
 
     <script>
     // ============================================================
-    // NAVIGATION INTERCEPTOR v3
-    // Uses capture phase (fires BEFORE React Router) to redirect
-    // "Read More", "Read Article", and "Learn More" clicks to 
-    // static HTML pages for blog articles and services.
+    // SILVERENE NORTH - CUSTOM SCRIPTS
     // ============================================================
-    (function () {
-      // ---- BLOG ARTICLE ROUTES ----
+
+    (function() {
+      // ============================================================
+      // 1. HIDE SECTIONS VIA DOM MANIPULATION
+      // ============================================================
+      function hideElements() {
+        // Hide "Meet the Founder" section
+        document.querySelectorAll('h2, h3').forEach(function(el) {
+          var text = (el.textContent || '').toLowerCase();
+          if (text.indexOf('meet the founder') !== -1 || text.indexOf('the team') !== -1) {
+            // Walk up to find the section container
+            var parent = el.parentElement;
+            for (var i = 0; i < 8; i++) {
+              if (!parent) break;
+              var tag = parent.tagName.toLowerCase();
+              if (tag === 'section' || (parent.className && parent.className.indexOf('py-') !== -1)) {
+                parent.style.display = 'none';
+                break;
+              }
+              parent = parent.parentElement;
+            }
+          }
+        });
+
+        // Hide "Toronto Office" and "Dubai Inquiries" cards
+        document.querySelectorAll('h3, h4').forEach(function(el) {
+          var text = (el.textContent || '').toLowerCase();
+          if (text.indexOf('toronto office') !== -1 || text.indexOf('dubai inquiries') !== -1) {
+            var parent = el.parentElement;
+            for (var i = 0; i < 6; i++) {
+              if (!parent) break;
+              // Look for the card container (usually has border/shadow)
+              if (parent.className && (parent.className.indexOf('rounded') !== -1 || parent.className.indexOf('border') !== -1 || parent.className.indexOf('shadow') !== -1)) {
+                parent.style.display = 'none';
+                break;
+              }
+              parent = parent.parentElement;
+            }
+          }
+        });
+
+        // Hide the grid containing both office cards
+        document.querySelectorAll('div').forEach(function(el) {
+          var children = el.querySelectorAll('h3, h4');
+          var hasTorontoOffice = false;
+          var hasDubaiInquiries = false;
+          children.forEach(function(child) {
+            var t = (child.textContent || '').toLowerCase();
+            if (t.indexOf('toronto office') !== -1) hasTorontoOffice = true;
+            if (t.indexOf('dubai inquiries') !== -1) hasDubaiInquiries = true;
+          });
+          if (hasTorontoOffice && hasDubaiInquiries) {
+            el.style.display = 'none';
+          }
+        });
+
+        // Hide "Book a Call" section
+        document.querySelectorAll('h3, h4').forEach(function(el) {
+          var text = (el.textContent || '').toLowerCase();
+          if (text.indexOf('book a call') !== -1) {
+            var parent = el.parentElement;
+            for (var i = 0; i < 6; i++) {
+              if (!parent) break;
+              if (parent.className && (parent.className.indexOf('rounded') !== -1 || parent.className.indexOf('border') !== -1 || parent.className.indexOf('bg-') !== -1)) {
+                parent.style.display = 'none';
+                break;
+              }
+              parent = parent.parentElement;
+            }
+          }
+        });
+      }
+
+      // Run after DOM is ready and after React renders
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+          setTimeout(hideElements, 500);
+          setTimeout(hideElements, 1500);
+          setTimeout(hideElements, 3000);
+        });
+      } else {
+        setTimeout(hideElements, 500);
+        setTimeout(hideElements, 1500);
+        setTimeout(hideElements, 3000);
+      }
+
+      // Also run on any DOM changes (React re-renders)
+      var hideObserver = new MutationObserver(function() {
+        setTimeout(hideElements, 100);
+      });
+      setTimeout(function() {
+        hideObserver.observe(document.body, { childList: true, subtree: true });
+      }, 2000);
+
+      // ============================================================
+      // 2. FIX SCROLL POSITION FOR CONTACT/FREE AI AUDIT BUTTONS
+      // ============================================================
+      document.addEventListener('click', function(e) {
+        var target = e.target;
+        var anchor = null;
+        var node = target;
+        
+        // Walk up to find anchor or button
+        for (var i = 0; i < 5; i++) {
+          if (!node) break;
+          if (node.tagName === 'A' || node.tagName === 'BUTTON') {
+            anchor = node;
+            break;
+          }
+          node = node.parentElement;
+        }
+        if (!anchor) return;
+
+        var text = (anchor.textContent || '').toLowerCase().trim();
+        var href = anchor.getAttribute('href') || '';
+
+        // Check if this is a contact/audit link
+        var isContactLink = (
+          href.indexOf('#contact') !== -1 ||
+          href.indexOf('/contact') !== -1 ||
+          text.indexOf('free ai audit') !== -1 ||
+          text.indexOf('contact') !== -1 ||
+          text.indexOf('get your free') !== -1 ||
+          text.indexOf('get my free audit') !== -1
+        );
+
+        if (isContactLink) {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          // Wait a moment for React navigation, then scroll to form
+          setTimeout(function() {
+            // Find the form element
+            var form = document.querySelector('form');
+            if (form) {
+              var formTop = form.getBoundingClientRect().top + window.pageYOffset;
+              window.scrollTo({
+                top: formTop - 100, // 100px offset from top
+                behavior: 'smooth'
+              });
+            } else {
+              // Fallback: scroll to bottom of page
+              window.scrollTo({
+                top: document.body.scrollHeight,
+                behavior: 'smooth'
+              });
+            }
+          }, 100);
+
+          // Also trigger React navigation if it's a hash link
+          if (href.indexOf('#contact') !== -1) {
+            window.location.hash = '#contact';
+          }
+        }
+      }, true);
+
+      // ============================================================
+      // 3. MAKE CONTACT FORM WORK (EMAIL TO info@silverenebusinessgroup.com)
+      // ============================================================
+      function setupFormHandler() {
+        var forms = document.querySelectorAll('form');
+        forms.forEach(function(form) {
+          // Check if this looks like the contact form
+          var hasNameField = form.querySelector('input[name*="name"], input[placeholder*="name"]');
+          var hasEmailField = form.querySelector('input[name*="email"], input[type="email"], input[placeholder*="email"]');
+          
+          if (hasNameField || hasEmailField) {
+            form.addEventListener('submit', function(e) {
+              e.preventDefault();
+              
+              // Gather form data
+              var formData = new FormData(form);
+              var inputs = form.querySelectorAll('input, textarea, select');
+              var emailBody = [];
+              
+              inputs.forEach(function(input) {
+                var label = '';
+                var value = input.value || '';
+                
+                // Try to get label from placeholder, name, or preceding label element
+                if (input.placeholder) {
+                  label = input.placeholder;
+                } else if (input.name) {
+                  label = input.name.replace(/[_-]/g, ' ').replace(/([A-Z])/g, ' $1').trim();
+                }
+                
+                // Also check for label element
+                var labelEl = form.querySelector('label[for="' + input.id + '"]');
+                if (labelEl) {
+                  label = labelEl.textContent.replace('*', '').trim();
+                }
+                
+                // Check preceding element for label text
+                var prev = input.previousElementSibling;
+                if (prev && prev.tagName === 'LABEL') {
+                  label = prev.textContent.replace('*', '').trim();
+                }
+                
+                if (value && label) {
+                  emailBody.push(label + ': ' + value);
+                } else if (value && input.name) {
+                  emailBody.push(input.name + ': ' + value);
+                }
+              });
+              
+              // Create mailto link
+              var subject = encodeURIComponent('Free AI Audit Request - Silverene North');
+              var body = encodeURIComponent(emailBody.join('\n\n'));
+              var mailtoLink = 'mailto:info@silverenebusinessgroup.com?subject=' + subject + '&body=' + body;
+              
+              // Open email client
+              window.location.href = mailtoLink;
+              
+              // Show success message
+              var btn = form.querySelector('button[type="submit"]');
+              if (btn) {
+                var originalText = btn.textContent;
+                btn.textContent = 'Opening Email Client...';
+                btn.style.backgroundColor = '#22c55e';
+                setTimeout(function() {
+                  btn.textContent = originalText;
+                  btn.style.backgroundColor = '';
+                }, 3000);
+              }
+            });
+          }
+        });
+      }
+
+      // Run form setup after React renders
+      setTimeout(setupFormHandler, 1000);
+      setTimeout(setupFormHandler, 2500);
+      setTimeout(setupFormHandler, 5000);
+
+      // Also run on DOM changes
+      var formObserver = new MutationObserver(function() {
+        setTimeout(setupFormHandler, 200);
+      });
+      setTimeout(function() {
+        formObserver.observe(document.body, { childList: true, subtree: true });
+      }, 2000);
+
+      // ============================================================
+      // 4. NAVIGATION INTERCEPTOR FOR BLOG & SERVICES
+      // ============================================================
       var blogRoutes = [
         { words: ['ai search visibility', 'what is ai search', 'why your business needs'], url: '/ai-search-visibility.html' },
         { words: ['chatgpt', 'competitors', 'recommending your'], url: '/chatgpt-recommends-competitors.html' },
@@ -81,7 +336,6 @@
         { words: ['google ai overviews', 'ai overviews', 'business owners need to know'], url: '/google-ai-overviews.html' }
       ];
 
-      // ---- SERVICE PAGE ROUTES ----
       var serviceRoutes = [
         { words: ['get recommended by ai', 'ai search visibility', 'aeo'], url: '/services/ai-search-visibility.html' },
         { words: ['websites built for humans', 'website development', 'websites built'], url: '/services/website-development.html' },
@@ -101,28 +355,23 @@
         return null;
       }
 
-      // Find the card container and extract title/heading text
       function getCardText(el) {
         var node = el;
         var allText = '';
         
-        // Walk up the DOM to find a card container
         for (var depth = 0; depth < 15; depth++) {
           if (!node || node === document.body) break;
           
-          // Strategy 1: Look for heading tags
           var headings = node.querySelectorAll('h1, h2, h3, h4, h5, h6');
           for (var k = 0; k < headings.length; k++) {
             var txt = (headings[k].textContent || '').trim();
             if (txt.length > 8) {
-              // Check if this matches any route
               var blogUrl = matchRoute(txt, blogRoutes);
               var serviceUrl = matchRoute(txt, serviceRoutes);
               if (blogUrl || serviceUrl) return txt;
             }
           }
           
-          // Strategy 2: Look for elements with title/heading-like classes
           var titleElements = node.querySelectorAll('[class*="title"], [class*="heading"], [class*="headline"]');
           for (var m = 0; m < titleElements.length; m++) {
             var txt2 = (titleElements[m].textContent || '').trim();
@@ -133,7 +382,6 @@
             }
           }
           
-          // Strategy 3: Look for any text-heavy element that matches routes
           var textElements = node.querySelectorAll('p, span, div');
           for (var n = 0; n < textElements.length; n++) {
             var el2 = textElements[n];
@@ -145,17 +393,13 @@
             }
           }
           
-          // Collect all text from this node level for fallback matching
           allText += ' ' + (node.textContent || '');
-          
           node = node.parentElement;
         }
         
-        // Fallback: return all collected text
         return allText;
       }
 
-      // Check if link text is a "Read More" style link (for blog)
       function isReadMoreLink(text) {
         var t = (text || '').trim().toLowerCase();
         return (
@@ -170,7 +414,6 @@
         );
       }
 
-      // Check if link text is a "Learn More" style link (for services)
       function isLearnMoreLink(text) {
         var t = (text || '').trim().toLowerCase();
         return (
@@ -181,13 +424,11 @@
         );
       }
 
-      // CAPTURE PHASE — fires before React's synthetic event system
       document.addEventListener('click', function (e) {
         var target = e.target;
-
-        // Walk up to find the anchor or button tag
         var anchor = null;
         var node = target;
+        
         for (var i = 0; i < 8; i++) {
           if (!node || node === document.body) break;
           if (node.tagName === 'A') { anchor = node; break; }
@@ -196,7 +437,6 @@
         }
         if (!anchor) return;
 
-        // Get all text content from the anchor
         var linkText = (anchor.textContent || anchor.innerText || '').trim();
         
         var isBlogLink = isReadMoreLink(linkText);
@@ -204,7 +444,6 @@
         
         if (!isBlogLink && !isServiceLink) return;
 
-        // Find the title from the card
         var cardText = getCardText(anchor);
         var url = null;
 
@@ -216,10 +455,10 @@
 
         if (url) {
           e.preventDefault();
-          e.stopImmediatePropagation(); // blocks React Router entirely
+          e.stopImmediatePropagation();
           window.location.href = url;
         }
-      }, true); // <-- true = capture phase, fires BEFORE React
+      }, true);
 
     })();
     </script>
