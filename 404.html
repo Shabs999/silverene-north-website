@@ -4,9 +4,19 @@
     <meta charset="utf-8">
     <title>Silverene North Corp</title>
     <script>
-      // Only redirect if we came from a sub-page, not already at root
-      if (window.location.pathname !== '/') {
-        window.location.replace('/');
+      var path = window.location.pathname;
+      // Allow blog article pages to load directly
+      var blogPages = [
+        '/blog/ai-search-visibility.html',
+        '/blog/chatgpt-recommends-competitors.html',
+        '/blog/ai-guilt.html',
+        '/blog/google-ai-overviews.html'
+      ];
+      var isBlogPage = blogPages.some(function(p) { return path === p || path.indexOf('/blog/') === 0; });
+      if (!isBlogPage && path !== '/') {
+        // SPA redirect: encode path and redirect to root
+        var q = encodeURIComponent(path + window.location.search);
+        window.location.replace('/?p=' + q + window.location.hash);
       }
     </script>
   </head>
