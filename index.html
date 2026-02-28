@@ -67,20 +67,30 @@
 
     <script>
     // ============================================================
-    // BLOG ARTICLE INTERCEPTOR v2
+    // NAVIGATION INTERCEPTOR v3
     // Uses capture phase (fires BEFORE React Router) to redirect
-    // "Read More" / "Read Article" clicks to static HTML pages.
+    // "Read More", "Read Article", and "Learn More" clicks to 
+    // static HTML pages for blog articles and services.
     // ============================================================
     (function () {
-      // Article routes - each with multiple keyword matches
-      var routes = [
+      // ---- BLOG ARTICLE ROUTES ----
+      var blogRoutes = [
         { words: ['ai search visibility', 'what is ai search', 'why your business needs'], url: '/ai-search-visibility.html' },
         { words: ['chatgpt', 'competitors', 'recommending your'], url: '/chatgpt-recommends-competitors.html' },
         { words: ['ai guilt', '5 signs', 'five signs'], url: '/ai-guilt.html' },
         { words: ['google ai overviews', 'ai overviews', 'business owners need to know'], url: '/google-ai-overviews.html' }
       ];
 
-      function matchRoute(text) {
+      // ---- SERVICE PAGE ROUTES ----
+      var serviceRoutes = [
+        { words: ['get recommended by ai', 'ai search visibility', 'aeo'], url: '/services/ai-search-visibility.html' },
+        { words: ['websites built for humans', 'website development', 'websites built'], url: '/services/website-development.html' },
+        { words: ['business automation', 'automate your operations', 'stop doing repetitive'], url: '/services/business-automation.html' },
+        { words: ['crm', 'customer relationship', 'know your customers'], url: '/services/crm-implementation.html' },
+        { words: ['data analytics', 'data-driven', 'turn data into'], url: '/services/data-analytics.html' }
+      ];
+
+      function matchRoute(text, routes) {
         if (!text) return null;
         var t = text.toLowerCase();
         for (var i = 0; i < routes.length; i++) {
@@ -91,13 +101,12 @@
         return null;
       }
 
-      // Find the blog card container and extract title text
-      // Strategy: Walk up to find a card-like container, then search for title text
+      // Find the card container and extract title/heading text
       function getCardText(el) {
         var node = el;
         var allText = '';
         
-        // Walk up the DOM to find a card container (look for common patterns)
+        // Walk up the DOM to find a card container
         for (var depth = 0; depth < 15; depth++) {
           if (!node || node === document.body) break;
           
@@ -105,9 +114,11 @@
           var headings = node.querySelectorAll('h1, h2, h3, h4, h5, h6');
           for (var k = 0; k < headings.length; k++) {
             var txt = (headings[k].textContent || '').trim();
-            if (txt.length > 15) {
-              var url = matchRoute(txt);
-              if (url) return txt;
+            if (txt.length > 8) {
+              // Check if this matches any route
+              var blogUrl = matchRoute(txt, blogRoutes);
+              var serviceUrl = matchRoute(txt, serviceRoutes);
+              if (blogUrl || serviceUrl) return txt;
             }
           }
           
@@ -115,33 +126,22 @@
           var titleElements = node.querySelectorAll('[class*="title"], [class*="heading"], [class*="headline"]');
           for (var m = 0; m < titleElements.length; m++) {
             var txt2 = (titleElements[m].textContent || '').trim();
-            if (txt2.length > 15 && txt2.length < 200) {
-              var url2 = matchRoute(txt2);
-              if (url2) return txt2;
+            if (txt2.length > 8 && txt2.length < 200) {
+              var blogUrl2 = matchRoute(txt2, blogRoutes);
+              var serviceUrl2 = matchRoute(txt2, serviceRoutes);
+              if (blogUrl2 || serviceUrl2) return txt2;
             }
           }
           
-          // Strategy 3: Look for any text-heavy element (p, span, div) that matches routes
+          // Strategy 3: Look for any text-heavy element that matches routes
           var textElements = node.querySelectorAll('p, span, div');
           for (var n = 0; n < textElements.length; n++) {
-            // Only check direct text content, not nested
             var el2 = textElements[n];
-            var directText = '';
-            for (var c = 0; c < el2.childNodes.length; c++) {
-              if (el2.childNodes[c].nodeType === 3) { // Text node
-                directText += el2.childNodes[c].textContent;
-              }
-            }
-            directText = directText.trim();
-            if (directText.length > 15 && directText.length < 200) {
-              var url3 = matchRoute(directText);
-              if (url3) return directText;
-            }
-            // Also check full text content
             var fullText = (el2.textContent || '').trim();
-            if (fullText.length > 15 && fullText.length < 200) {
-              var url4 = matchRoute(fullText);
-              if (url4) return fullText;
+            if (fullText.length > 8 && fullText.length < 200) {
+              var blogUrl3 = matchRoute(fullText, blogRoutes);
+              var serviceUrl3 = matchRoute(fullText, serviceRoutes);
+              if (blogUrl3 || serviceUrl3) return fullText;
             }
           }
           
@@ -151,11 +151,11 @@
           node = node.parentElement;
         }
         
-        // Fallback: try to match against all collected text
+        // Fallback: return all collected text
         return allText;
       }
 
-      // Check if link text indicates a blog "Read More" style link
+      // Check if link text is a "Read More" style link (for blog)
       function isReadMoreLink(text) {
         var t = (text || '').trim().toLowerCase();
         return (
@@ -170,30 +170,49 @@
         );
       }
 
+      // Check if link text is a "Learn More" style link (for services)
+      function isLearnMoreLink(text) {
+        var t = (text || '').trim().toLowerCase();
+        return (
+          t === 'learn more' ||
+          t === 'learn more →' ||
+          t === 'learn more→' ||
+          t.indexOf('learn more') === 0
+        );
+      }
+
       // CAPTURE PHASE — fires before React's synthetic event system
       document.addEventListener('click', function (e) {
         var target = e.target;
 
-        // Walk up to find the anchor tag (might click on span inside anchor)
+        // Walk up to find the anchor or button tag
         var anchor = null;
         var node = target;
         for (var i = 0; i < 8; i++) {
           if (!node || node === document.body) break;
           if (node.tagName === 'A') { anchor = node; break; }
-          // Also check for button elements that might navigate
           if (node.tagName === 'BUTTON') { anchor = node; break; }
           node = node.parentElement;
         }
         if (!anchor) return;
 
-        // Get all text content from the anchor (handles nested spans/icons)
+        // Get all text content from the anchor
         var linkText = (anchor.textContent || anchor.innerText || '').trim();
         
-        if (!isReadMoreLink(linkText)) return;
+        var isBlogLink = isReadMoreLink(linkText);
+        var isServiceLink = isLearnMoreLink(linkText);
+        
+        if (!isBlogLink && !isServiceLink) return;
 
-        // Find the article title from the card
+        // Find the title from the card
         var cardText = getCardText(anchor);
-        var url = matchRoute(cardText);
+        var url = null;
+
+        if (isBlogLink) {
+          url = matchRoute(cardText, blogRoutes);
+        } else if (isServiceLink) {
+          url = matchRoute(cardText, serviceRoutes);
+        }
 
         if (url) {
           e.preventDefault();
