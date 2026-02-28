@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Data Analytics — Turn Your Data Into Decisions | Silverene North Corp</title>
+  <meta name="description" content="Custom dashboards and analytics that transform your business data into actionable insights. Make confident decisions backed by real numbers." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', sans-serif; background: #f8f9fc; color: #1a1a2e; line-height: 1.7; }
+    a { color: inherit; text-decoration: none; }
+    .nav { background: #0d1b3e; padding: 18px 40px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+    .nav-logo { display: flex; align-items: center; gap: 12px; }
+    .nav-logo-box { width: 40px; height: 40px; background: #c9a84c; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-family: 'Sora', sans-serif; font-weight: 800; color: #0d1b3e; font-size: 14px; }
+    .nav-logo-text { color: #fff; font-family: 'Sora', sans-serif; font-weight: 700; font-size: 16px; line-height: 1.2; }
+    .nav-logo-text span { display: block; font-size: 11px; font-weight: 400; opacity: 0.7; letter-spacing: 2px; text-transform: uppercase; }
+    .nav-back { color: #c9a84c; font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+    .nav-back:hover { opacity: 0.8; }
+    .hero { background: linear-gradient(135deg, #0d1b3e 0%, #1a3a6e 100%); padding: 80px 40px 60px; text-align: center; }
+    .hero-tag { display: inline-block; background: rgba(201,168,76,0.15); color: #c9a84c; border: 1px solid rgba(201,168,76,0.3); padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; margin-bottom: 24px; }
+    .hero h1 { font-family: 'Sora', sans-serif; font-size: clamp(28px, 5vw, 52px); font-weight: 800; color: #fff; max-width: 800px; margin: 0 auto 20px; line-height: 1.2; }
+    .hero-sub { color: rgba(255,255,255,0.8); font-size: 20px; max-width: 600px; margin: 0 auto; }
+    .content-wrap { max-width: 900px; margin: 0 auto; padding: 60px 24px 100px; }
+    .intro { font-size: 20px; color: #444; margin-bottom: 48px; line-height: 1.8; border-left: 4px solid #c9a84c; padding-left: 20px; }
+    h2 { font-family: 'Sora', sans-serif; font-size: 28px; font-weight: 700; color: #0d1b3e; margin: 48px 0 20px; }
+    h3 { font-family: 'Sora', sans-serif; font-size: 20px; font-weight: 600; color: #0d1b3e; margin: 32px 0 12px; }
+    p { font-size: 17px; color: #333; margin-bottom: 20px; }
+    .included-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin: 32px 0 48px; }
+    .included-card { background: #fff; border: 1px solid #e8eaf0; border-radius: 12px; padding: 28px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+    .included-card .icon { width: 48px; height: 48px; background: linear-gradient(135deg, #c9a84c, #e8c86e); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 16px; }
+    .included-card h4 { font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 600; color: #0d1b3e; margin-bottom: 8px; }
+    .included-card p { font-size: 15px; color: #555; margin: 0; }
+    .dashboard-types { margin: 40px 0; }
+    .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+    .dashboard-card { background: #fff; border: 1px solid #e8eaf0; border-radius: 12px; padding: 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+    .dashboard-card h4 { font-family: 'Sora', sans-serif; font-size: 17px; font-weight: 600; color: #0d1b3e; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+    .dashboard-card ul { list-style: none; padding: 0; margin: 0; }
+    .dashboard-card li { font-size: 14px; color: #555; padding: 4px 0; padding-left: 20px; position: relative; }
+    .dashboard-card li::before { content: '→'; position: absolute; left: 0; color: #c9a84c; }
+    .tools-section { background: #fff; border: 1px solid #e8eaf0; border-radius: 12px; padding: 32px; margin: 40px 0; }
+    .tools-section h3 { margin-top: 0; }
+    .tools-grid { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; }
+    .tool-tag { background: #f0f2f5; padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 500; color: #0d1b3e; }
+    .callout { background: linear-gradient(135deg, #0d1b3e, #1a3a6e); color: #fff; border-radius: 16px; padding: 36px 40px; margin: 48px 0; }
+    .callout h3 { color: #c9a84c; margin-top: 0; }
+    .callout p { color: rgba(255,255,255,0.85); margin-bottom: 0; }
+    .cta-section { background: #fff; border: 2px solid #c9a84c; border-radius: 16px; padding: 48px; text-align: center; margin-top: 60px; }
+    .cta-section h3 { margin-top: 0; font-size: 26px; color: #0d1b3e; }
+    .cta-section p { color: #555; font-size: 17px; max-width: 500px; margin: 16px auto 0; }
+    .cta-btn { display: inline-block; background: #c9a84c; color: #0d1b3e; font-family: 'Sora', sans-serif; font-weight: 700; padding: 16px 40px; border-radius: 8px; margin-top: 24px; font-size: 16px; }
+    .cta-btn:hover { opacity: 0.9; }
+    @media (max-width: 600px) {
+      .nav { padding: 16px 20px; }
+      .hero { padding: 60px 20px 40px; }
+      .content-wrap { padding: 40px 20px 60px; }
+      .cta-section { padding: 32px 24px; }
+    }
+  </style>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="nav-logo"><div class="nav-logo-box">SN</div><div class="nav-logo-text">Silverene North<span>Corp</span></div></a>
+  <a href="/#services" class="nav-back">← Back to Services</a>
+</nav>
+<div class="hero">
+  <div class="hero-tag">Data Analytics</div>
+  <h1>Turn Your Data Into Decisions</h1>
+  <p class="hero-sub">Stop guessing. Custom dashboards that give you the answers you need to grow your business.</p>
+</div>
+<div class="content-wrap">
+  <p class="intro">Your business generates data every day — sales, customers, marketing, operations. But if that data lives in spreadsheets, disconnected systems, or reports nobody reads, it's not helping you make better decisions. We change that.</p>
+  
+  <h2>The Problem with Most Business Data</h2>
+  <p>Data exists, but it's scattered. It takes hours to compile. By the time you get answers, the moment has passed. Key questions go unanswered because getting the data is too hard.</p>
+  <p>We build analytics systems that put the answers you need at your fingertips — updated automatically, visualized clearly, and accessible whenever you need them.</p>
+  
+  <h2>What We Deliver</h2>
+  <div class="included-grid">
+    <div class="included-card">
+      <div class="icon">📊</div>
+      <h4>Custom Dashboards</h4>
+      <p>Visual dashboards designed for your specific KPIs and questions — not generic templates that miss what matters.</p>
+    </div>
+    <div class="included-card">
+      <div class="icon">🔄</div>
+      <h4>Automated Data Pipelines</h4>
+      <p>Your data flows automatically from source systems into your dashboard — always fresh, no manual work.</p>
+    </div>
+    <div class="included-card">
+      <div class="icon">🔗</div>
+      <h4>Data Integration</h4>
+      <p>We connect data from multiple sources — CRM, accounting, marketing, operations — into a single view.</p>
+    </div>
+    <div class="included-card">
+      <div class="icon">📱</div>
+      <h4>Mobile Access</h4>
+      <p>Check your metrics from anywhere. Our dashboards work beautifully on desktop, tablet, and phone.</p>
+    </div>
+  </div>
+  
+  <h2>Dashboards We Build</h2>
+  <div class="dashboard-types">
+    <div class="dashboard-grid">
+      <div class="dashboard-card">
+        <h4>📈 Sales & Revenue</h4>
+        <ul>
+          <li>Pipeline value and velocity</li>
+          <li>Win/loss analysis</li>
+          <li>Revenue by product/region</li>
+          <li>Sales rep performance</li>
+        </ul>
+      </div>
+      <div class="dashboard-card">
+        <h4>🎯 Marketing Performance</h4>
+        <ul>
+          <li>Campaign ROI tracking</li>
+          <li>Lead source attribution</li>
+          <li>Website analytics</li>
+          <li>Conversion funnels</li>
+        </ul>
+      </div>
+      <div class="dashboard-card">
+        <h4>💰 Financial</h4>
+        <ul>
+          <li>Cash flow visibility</li>
+          <li>Expense tracking</li>
+          <li>Profitability by customer</li>
+          <li>Budget vs. actual</li>
+        </ul>
+      </div>
+      <div class="dashboard-card">
+        <h4>⚙️ Operations</h4>
+        <ul>
+          <li>Project status tracking</li>
+          <li>Resource utilization</li>
+          <li>Quality metrics</li>
+          <li>Delivery performance</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  
+  <div class="tools-section">
+    <h3>Tools We Use</h3>
+    <p>We work with modern analytics platforms that balance power with usability.</p>
+    <div class="tools-grid">
+      <span class="tool-tag">Looker Studio</span>
+      <span class="tool-tag">Power BI</span>
+      <span class="tool-tag">Tableau</span>
+      <span class="tool-tag">Metabase</span>
+      <span class="tool-tag">Google Sheets</span>
+      <span class="tool-tag">Airtable</span>
+      <span class="tool-tag">BigQuery</span>
+      <span class="tool-tag">PostgreSQL</span>
+    </div>
+  </div>
+  
+  <div class="callout">
+    <h3>Data-Driven Doesn't Mean Complicated</h3>
+    <p>We believe analytics should be simple. Our dashboards answer specific questions with clear visualizations — no data science degree required. If you can't understand your dashboard in 10 seconds, we've failed.</p>
+  </div>
+  
+  <h2>Our Process</h2>
+  <p><strong>Discovery:</strong> We identify the key questions your business needs to answer and where the data lives today.</p>
+  <p><strong>Design:</strong> We design dashboard mockups showing exactly what you'll see and how you'll interact with it.</p>
+  <p><strong>Build:</strong> We connect your data sources, build the pipelines, and create your dashboards.</p>
+  <p><strong>Train:</strong> We show your team how to read and use the dashboards effectively.</p>
+  <p><strong>Iterate:</strong> As your business evolves, we update your analytics to match.</p>
+  
+  <div class="cta-section">
+    <h3>Ready to See Your Data Clearly?</h3>
+    <p>Let's talk about what questions you need answered and how we can build analytics that actually help.</p>
+    <a href="/#contact" class="cta-btn">Get a Free Analytics Consultation →</a>
+  </div>
+</div>
+</body>
+</html>

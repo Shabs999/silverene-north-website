@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CRM Implementation — Know Your Customers, Close More Deals | Silverene North Corp</title>
+  <meta name="description" content="CRM setup and implementation for growing businesses. We configure HubSpot, Salesforce, and other CRMs to match your sales process and drive growth." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', sans-serif; background: #f8f9fc; color: #1a1a2e; line-height: 1.7; }
+    a { color: inherit; text-decoration: none; }
+    .nav { background: #0d1b3e; padding: 18px 40px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+    .nav-logo { display: flex; align-items: center; gap: 12px; }
+    .nav-logo-box { width: 40px; height: 40px; background: #c9a84c; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-family: 'Sora', sans-serif; font-weight: 800; color: #0d1b3e; font-size: 14px; }
+    .nav-logo-text { color: #fff; font-family: 'Sora', sans-serif; font-weight: 700; font-size: 16px; line-height: 1.2; }
+    .nav-logo-text span { display: block; font-size: 11px; font-weight: 400; opacity: 0.7; letter-spacing: 2px; text-transform: uppercase; }
+    .nav-back { color: #c9a84c; font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+    .nav-back:hover { opacity: 0.8; }
+    .hero { background: linear-gradient(135deg, #0d1b3e 0%, #1a3a6e 100%); padding: 80px 40px 60px; text-align: center; }
+    .hero-tag { display: inline-block; background: rgba(201,168,76,0.15); color: #c9a84c; border: 1px solid rgba(201,168,76,0.3); padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; margin-bottom: 24px; }
+    .hero h1 { font-family: 'Sora', sans-serif; font-size: clamp(28px, 5vw, 52px); font-weight: 800; color: #fff; max-width: 800px; margin: 0 auto 20px; line-height: 1.2; }
+    .hero-sub { color: rgba(255,255,255,0.8); font-size: 20px; max-width: 600px; margin: 0 auto; }
+    .content-wrap { max-width: 900px; margin: 0 auto; padding: 60px 24px 100px; }
+    .intro { font-size: 20px; color: #444; margin-bottom: 48px; line-height: 1.8; border-left: 4px solid #c9a84c; padding-left: 20px; }
+    h2 { font-family: 'Sora', sans-serif; font-size: 28px; font-weight: 700; color: #0d1b3e; margin: 48px 0 20px; }
+    h3 { font-family: 'Sora', sans-serif; font-size: 20px; font-weight: 600; color: #0d1b3e; margin: 32px 0 12px; }
+    p { font-size: 17px; color: #333; margin-bottom: 20px; }
+    .included-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin: 32px 0 48px; }
+    .included-card { background: #fff; border: 1px solid #e8eaf0; border-radius: 12px; padding: 28px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+    .included-card .icon { width: 48px; height: 48px; background: linear-gradient(135deg, #c9a84c, #e8c86e); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 16px; }
+    .included-card h4 { font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 600; color: #0d1b3e; margin-bottom: 8px; }
+    .included-card p { font-size: 15px; color: #555; margin: 0; }
+    .platforms { margin: 40px 0; }
+    .platform-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; }
+    .platform-card { background: #fff; border: 1px solid #e8eaf0; border-radius: 12px; padding: 24px; text-align: center; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+    .platform-card .logo { font-size: 36px; margin-bottom: 12px; }
+    .platform-card h4 { font-family: 'Sora', sans-serif; font-size: 16px; font-weight: 600; color: #0d1b3e; margin: 0; }
+    .callout { background: linear-gradient(135deg, #0d1b3e, #1a3a6e); color: #fff; border-radius: 16px; padding: 36px 40px; margin: 48px 0; }
+    .callout h3 { color: #c9a84c; margin-top: 0; }
+    .callout p { color: rgba(255,255,255,0.85); margin-bottom: 0; }
+    .process-list { counter-reset: step; list-style: none; margin: 32px 0; padding: 0; }
+    .process-list li { position: relative; padding-left: 70px; margin-bottom: 32px; }
+    .process-list li::before { counter-increment: step; content: counter(step); position: absolute; left: 0; top: 0; width: 48px; height: 48px; background: #0d1b3e; color: #c9a84c; font-family: 'Sora', sans-serif; font-weight: 700; font-size: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+    .process-list h4 { font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 600; color: #0d1b3e; margin-bottom: 6px; }
+    .process-list p { margin: 0; color: #555; }
+    .cta-section { background: #fff; border: 2px solid #c9a84c; border-radius: 16px; padding: 48px; text-align: center; margin-top: 60px; }
+    .cta-section h3 { margin-top: 0; font-size: 26px; color: #0d1b3e; }
+    .cta-section p { color: #555; font-size: 17px; max-width: 500px; margin: 16px auto 0; }
+    .cta-btn { display: inline-block; background: #c9a84c; color: #0d1b3e; font-family: 'Sora', sans-serif; font-weight: 700; padding: 16px 40px; border-radius: 8px; margin-top: 24px; font-size: 16px; }
+    .cta-btn:hover { opacity: 0.9; }
+    @media (max-width: 600px) {
+      .nav { padding: 16px 20px; }
+      .hero { padding: 60px 20px 40px; }
+      .content-wrap { padding: 40px 20px 60px; }
+      .cta-section { padding: 32px 24px; }
+    }
+  </style>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="nav-logo"><div class="nav-logo-box">SN</div><div class="nav-logo-text">Silverene North<span>Corp</span></div></a>
+  <a href="/#services" class="nav-back">← Back to Services</a>
+</nav>
+<div class="hero">
+  <div class="hero-tag">CRM Implementation</div>
+  <h1>Know Your Customers, Close More Deals</h1>
+  <p class="hero-sub">A CRM that actually works for your business — configured to match your sales process and drive real growth.</p>
+</div>
+<div class="content-wrap">
+  <p class="intro">Most businesses either don't have a CRM, have one that nobody uses, or have one that's so poorly configured it creates more work than it saves. We fix that. We implement CRMs that your team will actually use — because they make their jobs easier, not harder.</p>
+  
+  <h2>Why CRM Implementations Fail</h2>
+  <p>The technology is rarely the problem. CRM implementations fail because they don't match how your business actually works. Out-of-the-box configurations assume a generic sales process that doesn't exist in the real world.</p>
+  <p>We start by understanding YOUR process — then configure the CRM to support it, not fight it.</p>
+  
+  <h2>What's Included</h2>
+  <div class="included-grid">
+    <div class="included-card">
+      <div class="icon">🎯</div>
+      <h4>Process Mapping</h4>
+      <p>We document your current sales and customer management processes to ensure the CRM supports how you actually work.</p>
+    </div>
+    <div class="included-card">
+      <div class="icon">⚙️</div>
+      <h4>Custom Configuration</h4>
+      <p>Pipelines, fields, automations, and workflows configured specifically for your business — not generic templates.</p>
+    </div>
+    <div class="included-card">
+      <div class="icon">📥</div>
+      <h4>Data Migration</h4>
+      <p>Clean import of your existing customer data from spreadsheets, old CRMs, or other sources.</p>
+    </div>
+    <div class="included-card">
+      <div class="icon">🔗</div>
+      <h4>Integrations</h4>
+      <p>Connect your CRM to email, calendar, accounting software, and other tools your team uses daily.</p>
+    </div>
+    <div class="included-card">
+      <div class="icon">📚</div>
+      <h4>Team Training</h4>
+      <p>Hands-on training for your team so they're confident using the system from day one.</p>
+    </div>
+    <div class="included-card">
+      <div class="icon">📊</div>
+      <h4>Reporting Setup</h4>
+      <p>Dashboards and reports that give you visibility into pipeline, performance, and customer health.</p>
+    </div>
+  </div>
+  
+  <h2>Platforms We Implement</h2>
+  <div class="platforms">
+    <div class="platform-grid">
+      <div class="platform-card">
+        <div class="logo">🟠</div>
+        <h4>HubSpot</h4>
+      </div>
+      <div class="platform-card">
+        <div class="logo">☁️</div>
+        <h4>Salesforce</h4>
+      </div>
+      <div class="platform-card">
+        <div class="logo">🟢</div>
+        <h4>Pipedrive</h4>
+      </div>
+      <div class="platform-card">
+        <div class="logo">🔵</div>
+        <h4>Zoho CRM</h4>
+      </div>
+      <div class="platform-card">
+        <div class="logo">📋</div>
+        <h4>Monday CRM</h4>
+      </div>
+      <div class="platform-card">
+        <div class="logo">💼</div>
+        <h4>Freshsales</h4>
+      </div>
+    </div>
+  </div>
+  
+  <h2>Our Implementation Process</h2>
+  <ol class="process-list">
+    <li>
+      <h4>Discovery</h4>
+      <p>We interview your team to understand your sales process, customer journey, and what's not working today.</p>
+    </li>
+    <li>
+      <h4>Design</h4>
+      <p>We create a CRM blueprint showing exactly how the system will be configured for your business.</p>
+    </li>
+    <li>
+      <h4>Build</h4>
+      <p>We configure the CRM, set up automations, migrate your data, and connect integrations.</p>
+    </li>
+    <li>
+      <h4>Train</h4>
+      <p>Your team gets hands-on training customized to their specific roles and daily workflows.</p>
+    </li>
+    <li>
+      <h4>Support</h4>
+      <p>We provide ongoing support to answer questions, make adjustments, and ensure adoption.</p>
+    </li>
+  </ol>
+  
+  <div class="callout">
+    <h3>The Real ROI</h3>
+    <p>A well-implemented CRM doesn't just organize contacts — it shortens sales cycles, improves follow-up rates, surfaces upsell opportunities, and gives you visibility into what's actually happening in your business. The ROI comes from deals you win that you would have lost.</p>
+  </div>
+  
+  <div class="cta-section">
+    <h3>Ready for a CRM That Works?</h3>
+    <p>Let's talk about your sales process and how a properly configured CRM can accelerate your growth.</p>
+    <a href="/#contact" class="cta-btn">Schedule a CRM Consultation →</a>
+  </div>
+</div>
+</body>
+</html>

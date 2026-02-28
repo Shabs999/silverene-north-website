@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Website Development — Websites Built for Humans AND AI | Silverene North Corp</title>
+  <meta name="description" content="Modern websites that look beautiful AND get found by AI search engines. Custom design, mobile-responsive, AI-optimized structure and schema markup." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', sans-serif; background: #f8f9fc; color: #1a1a2e; line-height: 1.7; }
+    a { color: inherit; text-decoration: none; }
+    .nav { background: #0d1b3e; padding: 18px 40px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+    .nav-logo { display: flex; align-items: center; gap: 12px; }
+    .nav-logo-box { width: 40px; height: 40px; background: #c9a84c; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-family: 'Sora', sans-serif; font-weight: 800; color: #0d1b3e; font-size: 14px; }
+    .nav-logo-text { color: #fff; font-family: 'Sora', sans-serif; font-weight: 700; font-size: 16px; line-height: 1.2; }
+    .nav-logo-text span { display: block; font-size: 11px; font-weight: 400; opacity: 0.7; letter-spacing: 2px; text-transform: uppercase; }
+    .nav-back { color: #c9a84c; font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+    .nav-back:hover { opacity: 0.8; }
+    .hero { background: linear-gradient(135deg, #0d1b3e 0%, #1a3a6e 100%); padding: 80px 40px 60px; text-align: center; }
+    .hero-tag { display: inline-block; background: rgba(201,168,76,0.15); color: #c9a84c; border: 1px solid rgba(201,168,76,0.3); padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; margin-bottom: 24px; }
+    .hero h1 { font-family: 'Sora', sans-serif; font-size: clamp(28px, 5vw, 52px); font-weight: 800; color: #fff; max-width: 800px; margin: 0 auto 20px; line-height: 1.2; }
+    .hero-sub { color: rgba(255,255,255,0.8); font-size: 20px; max-width: 600px; margin: 0 auto; }
+    .content-wrap { max-width: 900px; margin: 0 auto; padding: 60px 24px 100px; }
+    .intro { font-size: 20px; color: #444; margin-bottom: 48px; line-height: 1.8; border-left: 4px solid #c9a84c; padding-left: 20px; }
+    h2 { font-family: 'Sora', sans-serif; font-size: 28px; font-weight: 700; color: #0d1b3e; margin: 48px 0 20px; }
+    h3 { font-family: 'Sora', sans-serif; font-size: 20px; font-weight: 600; color: #0d1b3e; margin: 32px 0 12px; }
+    p { font-size: 17px; color: #333; margin-bottom: 20px; }
+    .included-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin: 32px 0 48px; }
+    .included-card { background: #fff; border: 1px solid #e8eaf0; border-radius: 12px; padding: 28px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+    .included-card .icon { width: 48px; height: 48px; background: linear-gradient(135deg, #c9a84c, #e8c86e); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 16px; }
+    .included-card h4 { font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 600; color: #0d1b3e; margin-bottom: 8px; }
+    .included-card p { font-size: 15px; color: #555; margin: 0; }
+    .comparison { margin: 40px 0; }
+    .comparison-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .comparison-card { background: #fff; border-radius: 12px; padding: 28px; border: 1px solid #e8eaf0; }
+    .comparison-card.old { border-top: 4px solid #ccc; }
+    .comparison-card.new { border-top: 4px solid #c9a84c; }
+    .comparison-card h4 { font-family: 'Sora', sans-serif; font-size: 16px; font-weight: 600; margin-bottom: 16px; }
+    .comparison-card ul { list-style: none; padding: 0; }
+    .comparison-card li { padding: 8px 0; font-size: 15px; color: #555; display: flex; align-items: flex-start; gap: 10px; }
+    .comparison-card.old li::before { content: '✗'; color: #999; }
+    .comparison-card.new li::before { content: '✓'; color: #c9a84c; font-weight: 700; }
+    .callout { background: linear-gradient(135deg, #0d1b3e, #1a3a6e); color: #fff; border-radius: 16px; padding: 36px 40px; margin: 48px 0; }
+    .callout h3 { color: #c9a84c; margin-top: 0; }
+    .callout p { color: rgba(255,255,255,0.85); margin-bottom: 0; }
+    .cta-section { background: #fff; border: 2px solid #c9a84c; border-radius: 16px; padding: 48px; text-align: center; margin-top: 60px; }
+    .cta-section h3 { margin-top: 0; font-size: 26px; color: #0d1b3e; }
+    .cta-section p { color: #555; font-size: 17px; max-width: 500px; margin: 16px auto 0; }
+    .cta-btn { display: inline-block; background: #c9a84c; color: #0d1b3e; font-family: 'Sora', sans-serif; font-weight: 700; padding: 16px 40px; border-radius: 8px; margin-top: 24px; font-size: 16px; }
+    .cta-btn:hover { opacity: 0.9; }
+    @media (max-width: 700px) {
+      .comparison-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+      .nav { padding: 16px 20px; }
+      .hero { padding: 60px 20px 40px; }
+      .content-wrap { padding: 40px 20px 60px; }
+      .cta-section { padding: 32px 24px; }
+    }
+  </style>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="nav-logo"><div class="nav-logo-box">SN</div><div class="nav-logo-text">Silverene North<span>Corp</span></div></a>
+  <a href="/#services" class="nav-back">← Back to Services</a>
+</nav>
+<div class="hero">
+  <div class="hero-tag">Website Development</div>
+  <h1>Websites Built for Humans AND AI</h1>
+  <p class="hero-sub">A beautiful website isn't enough anymore. Your site needs to be understood by AI search engines too.</p>
+</div>
+<div class="content-wrap">
+  <p class="intro">We build modern, fast websites that look great AND get found. Every site we create is designed for humans to love and AI systems to understand — giving you the best of both worlds.</p>
+  
+  <h2>The New Reality</h2>
+  <p>Your website isn't just for human visitors anymore. AI search engines like ChatGPT and Google Gemini read your site to understand what your business does, who you serve, and whether to recommend you.</p>
+  <p>Most web developers don't think about this. They build beautiful sites that are invisible to AI. We build sites that work for both audiences.</p>
+  
+  <h2>What's Included</h2>
+  <div class="included-grid">
+    <div class="included-card">
+      <div class="icon">🎨</div>
+      <h4>Custom Design</h4>
+      <p>Unique design aligned with your brand identity. No templates — every site is crafted specifically for your business.</p>
+    </div>
+    <div class="included-card">
+      <div class="icon">📱</div>
+      <h4>Mobile-Responsive</h4>
+      <p>Perfect experience on all devices. Your site adapts seamlessly from desktop to tablet to mobile.</p>
+    </div>
+    <div class="included-card">
+      <div class="icon">🤖</div>
+      <h4>AI-Optimized Structure</h4>
+      <p>Schema markup and semantic HTML that helps AI systems accurately understand your business.</p>
+    </div>
+    <div class="included-card">
+      <div class="icon">⚡</div>
+      <h4>Fast Loading</h4>
+      <p>Optimized for speed and SEO. Fast sites rank better and convert more visitors into customers.</p>
+    </div>
+  </div>
+  
+  <h2>Traditional vs. AI-Ready Websites</h2>
+  <div class="comparison">
+    <div class="comparison-grid">
+      <div class="comparison-card old">
+        <h4>Traditional Website</h4>
+        <ul>
+          <li>Looks good to humans</li>
+          <li>Basic SEO optimization</li>
+          <li>No structured data</li>
+          <li>Content written for keywords</li>
+          <li>Invisible to AI assistants</li>
+        </ul>
+      </div>
+      <div class="comparison-card new">
+        <h4>AI-Ready Website</h4>
+        <ul>
+          <li>Looks good to humans AND AI</li>
+          <li>Full SEO + AEO optimization</li>
+          <li>Complete schema markup</li>
+          <li>Content written for clarity</li>
+          <li>Recommended by AI assistants</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  
+  <div class="callout">
+    <h3>Built for the Future</h3>
+    <p>The way people find businesses is changing. A website built today needs to work for how customers will search tomorrow — which increasingly means through AI. We future-proof your investment.</p>
+  </div>
+  
+  <h2>Our Development Process</h2>
+  <p><strong>Discovery:</strong> We learn about your business, your customers, and your goals to inform every design decision.</p>
+  <p><strong>Design:</strong> Custom mockups for your review. We iterate until you love it.</p>
+  <p><strong>Development:</strong> We build your site with clean code, fast performance, and full AI optimization.</p>
+  <p><strong>Launch & Support:</strong> We handle the technical launch and provide ongoing support to keep your site performing.</p>
+  
+  <div class="cta-section">
+    <h3>Ready for a Website That Works Harder?</h3>
+    <p>Let's discuss your project and show you what an AI-ready website can do for your business.</p>
+    <a href="/#contact" class="cta-btn">Start Your Project →</a>
+  </div>
+</div>
+</body>
+</html>
