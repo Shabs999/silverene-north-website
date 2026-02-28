@@ -42,31 +42,16 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Sora:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet" />
 
-    <!-- Hide Case Studies nav link and section until ready -->
+    <!-- Hide Case Studies + More Articles Coming card -->
     <style>
       a[href="/case-studies"],
       a[href*="case-studies"] { display: none !important; }
       section[class*="case-studies"],
       div[class*="case-studies"],
       #case-studies { display: none !important; }
+      /* Hide the dashed "More Articles Coming" placeholder card */
+      .border-dashed { display: none !important; }
     </style>
-
-    <!-- Hide "More Articles Coming" blog card -->
-    <script>
-      function hideMoreArticles() {
-        var all = document.querySelectorAll('*');
-        for (var i = 0; i < all.length; i++) {
-          if (all[i].childNodes.length === 1 && all[i].textContent.trim() === 'More Articles Coming') {
-            var card = all[i].closest('a, article, div[class]');
-            if (card) { card.style.display = 'none'; return; }
-          }
-        }
-      }
-      document.addEventListener('DOMContentLoaded', function() {
-        setTimeout(hideMoreArticles, 500);
-        setTimeout(hideMoreArticles, 1500);
-      });
-    </script>
 
     <!-- Schema.org: LocalBusiness -->
     <script type="application/ld+json">
