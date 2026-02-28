@@ -13,28 +13,25 @@
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://silverenebusinessgroup.com/" />
 
-    <!-- Open Graph / Facebook -->
+    <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://silverenebusinessgroup.com/" />
     <meta property="og:title" content="Silverene North Corp — We Are Your AI Department" />
     <meta property="og:description" content="Complete AI business solutions for Toronto and Dubai. From AI Search Visibility to Business Automation — we become your AI department." />
     <meta property="og:image" content="https://silverenebusinessgroup.com/og-image.jpg" />
     <meta property="og:locale" content="en_CA" />
-    <meta property="og:locale:alternate" content="en_AE" />
     <meta property="og:site_name" content="Silverene North Corp" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:url" content="https://silverenebusinessgroup.com/" />
     <meta name="twitter:title" content="Silverene North Corp — We Are Your AI Department" />
-    <meta name="twitter:description" content="Complete AI business solutions for Toronto and Dubai. From AI Search Visibility to Business Automation." />
+    <meta name="twitter:description" content="Complete AI business solutions for Toronto and Dubai." />
     <meta name="twitter:image" content="https://silverenebusinessgroup.com/og-image.jpg" />
 
     <!-- Geo Tags -->
     <meta name="geo.region" content="CA-ON" />
     <meta name="geo.placename" content="Toronto, Ontario, Canada" />
-
-    <!-- Theme Color -->
     <meta name="theme-color" content="#0d1b3e" />
 
     <!-- Google Fonts -->
@@ -42,14 +39,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Sora:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet" />
 
-    <!-- Hide Case Studies + More Articles Coming card -->
     <style>
-      a[href="/case-studies"],
-      a[href*="case-studies"] { display: none !important; }
-      section[class*="case-studies"],
-      div[class*="case-studies"],
-      #case-studies { display: none !important; }
-      /* Hide the dashed "More Articles Coming" placeholder card */
+      a[href="/case-studies"], a[href*="case-studies"] { display: none !important; }
+      section[class*="case-studies"], div[class*="case-studies"], #case-studies { display: none !important; }
       .border-dashed { display: none !important; }
     </style>
 
@@ -62,39 +54,15 @@
       "description": "AI business solutions company providing AI Search Visibility, Website Development, Business Automation, CRM, and Data Analytics for businesses in Toronto and Dubai.",
       "url": "https://silverenebusinessgroup.com",
       "logo": "https://silverenebusinessgroup.com/logo.png",
-      "image": "https://silverenebusinessgroup.com/og-image.jpg",
-      "address": {
-        "@type": "PostalAddress",
-        "addressLocality": "Toronto",
-        "addressRegion": "Ontario",
-        "addressCountry": "CA"
-      },
+      "address": { "@type": "PostalAddress", "addressLocality": "Toronto", "addressRegion": "Ontario", "addressCountry": "CA" },
       "areaServed": [
         {"@type": "City", "name": "Toronto", "addressCountry": "CA"},
         {"@type": "City", "name": "Dubai", "addressCountry": "AE"}
-      ],
-      "serviceType": [
-        "AI Search Visibility",
-        "Website Development",
-        "Google Business Profile Optimization",
-        "Business Automation",
-        "CRM Implementation",
-        "Data Analytics",
-        "Social Media Management"
       ]
     }
     </script>
-
-    <!-- Schema.org: Organization -->
     <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": "Silverene North Corp",
-      "alternateName": "Silverene North",
-      "url": "https://silverenebusinessgroup.com",
-      "logo": "https://silverenebusinessgroup.com/logo.png"
-    }
+    { "@context": "https://schema.org", "@type": "Organization", "name": "Silverene North Corp", "url": "https://silverenebusinessgroup.com", "logo": "https://silverenebusinessgroup.com/logo.png" }
     </script>
 
     <script type="module" crossorigin src="/assets/index-DFLA0lvK.js"></script>
@@ -103,94 +71,75 @@
   <body>
     <div id="root"></div>
 
-    <!-- Blog article link interceptor -->
+    <!--
+      Blog article link patcher.
+      Maps article card heading keywords to their root-level .html pages.
+      Runs on a MutationObserver so it fires AFTER React renders the blog section.
+    -->
     <script>
-      // Map of blog article slugs/keywords to their HTML pages
-      var blogRoutes = [
-        { keywords: ['ai-search-visibility', 'ai search visibility', 'what is ai search'], url: '/blog/ai-search-visibility.html' },
-        { keywords: ['chatgpt-recommends', 'competitors', 'recommending your competitors', 'chatgpt recommend'], url: '/blog/chatgpt-recommends-competitors.html' },
-        { keywords: ['ai-guilt', 'ai guilt', '5 signs'], url: '/blog/ai-guilt.html' },
-        { keywords: ['google-ai-overviews', 'google ai overviews', 'ai overviews'], url: '/blog/google-ai-overviews.html' }
-      ];
+      (function() {
+        // keyword -> url mapping (all files are at the root)
+        var routes = [
+          { words: ['ai search visibility', 'what is ai search'], url: '/ai-search-visibility.html' },
+          { words: ['chatgpt', 'competitors', 'recommending your competitors'], url: '/chatgpt-recommends-competitors.html' },
+          { words: ['ai guilt', '5 signs'], url: '/ai-guilt.html' },
+          { words: ['google ai overviews', 'ai overviews'], url: '/google-ai-overviews.html' }
+        ];
 
-      function matchBlogRoute(href, text) {
-        var combined = ((href || '') + ' ' + (text || '')).toLowerCase();
-        for (var i = 0; i < blogRoutes.length; i++) {
-          var route = blogRoutes[i];
-          for (var j = 0; j < route.keywords.length; j++) {
-            if (combined.indexOf(route.keywords[j]) !== -1) {
-              return route.url;
+        function findRoute(text) {
+          var lower = text.toLowerCase();
+          for (var i = 0; i < routes.length; i++) {
+            for (var j = 0; j < routes[i].words.length; j++) {
+              if (lower.indexOf(routes[i].words[j]) !== -1) return routes[i].url;
             }
           }
-        }
-        return null;
-      }
-
-      // Watch for React rendering the blog section, then intercept clicks
-      document.addEventListener('click', function(e) {
-        var el = e.target;
-        // Walk up to find an anchor tag
-        while (el && el.tagName !== 'A' && el !== document.body) {
-          el = el.parentElement;
-        }
-        if (!el || el.tagName !== 'A') return;
-
-        var href = el.getAttribute('href') || '';
-        var text = el.innerText || el.textContent || '';
-
-        // Look for read more / read article links
-        var isReadLink = /read\s*(more|article)/i.test(text) || /\/blog\//i.test(href) || /article/i.test(href);
-        if (!isReadLink) return;
-
-        // Find closest article card container and get its heading text
-        var card = el.closest('[class]');
-        var heading = '';
-        if (card) {
-          var h = card.querySelector('h1,h2,h3,h4,h5,h6');
-          if (h) heading = h.innerText || h.textContent || '';
+          return null;
         }
 
-        var destination = matchBlogRoute(href, text + ' ' + heading);
-        if (destination) {
-          e.preventDefault();
-          e.stopPropagation();
-          window.location.href = destination;
-        }
-      }, true);
+        function patchLinks() {
+          // Find all anchor tags whose text is Read More or Read Article
+          var links = document.querySelectorAll('a');
+          links.forEach(function(a) {
+            var txt = (a.textContent || '').trim().toLowerCase();
+            if (txt !== 'read more' && txt !== 'read more \u2192' && txt !== 'read article' && txt !== 'read article \u2192') return;
+            if (a.dataset.patched) return;
 
-      // Also intercept the featured "Read Article" button specifically
-      // by observing DOM mutations to patch hrefs once React renders
-      var patched = false;
-      var observer = new MutationObserver(function() {
-        if (patched) return;
-        var allLinks = document.querySelectorAll('a');
-        allLinks.forEach(function(a) {
-          var text = (a.innerText || a.textContent || '').trim().toLowerCase();
-          if (text === 'read article' || text === 'read article →' || text.indexOf('read article') === 0) {
-            var card = a.closest('[class]');
+            // Find the nearest heading in the same card
+            var card = a.closest('[class]') || a.parentElement;
             var heading = '';
             if (card) {
-              var h = card.querySelector('h1,h2,h3,h4,h5,h6');
-              if (h) heading = h.innerText || h.textContent || '';
+              // Walk up to find a bigger container with a heading
+              var container = card;
+              for (var i = 0; i < 6; i++) {
+                var h = container.querySelector('h1,h2,h3,h4,h5,h6,p');
+                if (h && h.textContent.length > 10) { heading = h.textContent; break; }
+                if (container.parentElement) container = container.parentElement;
+              }
             }
-            var dest = matchBlogRoute('', heading);
-            if (dest) { a.setAttribute('href', dest); a.removeAttribute('target'); }
-          }
-          if (text === 'read more' || text === 'read more →') {
-            var card2 = a.closest('[class]');
-            var heading2 = '';
-            if (card2) {
-              var h2 = card2.querySelector('h1,h2,h3,h4,h5,h6');
-              if (h2) heading2 = h2.innerText || h2.textContent || '';
+
+            var url = findRoute(heading);
+            if (url) {
+              a.setAttribute('href', url);
+              a.dataset.patched = '1';
             }
-            var dest2 = matchBlogRoute('', heading2);
-            if (dest2) { a.setAttribute('href', dest2); a.removeAttribute('target'); }
-          }
+          });
+        }
+
+        // Run immediately and on every DOM change
+        var done = false;
+        var obs = new MutationObserver(function() {
+          patchLinks();
         });
-      });
-      observer.observe(document.body, { childList: true, subtree: true });
-      // Stop observing after React has fully rendered
-      setTimeout(function() { patched = true; observer.disconnect(); }, 5000);
+        obs.observe(document.body, { childList: true, subtree: true });
+
+        // Also run a few times after load to be safe
+        window.addEventListener('load', function() {
+          patchLinks();
+          setTimeout(patchLinks, 500);
+          setTimeout(patchLinks, 1500);
+          setTimeout(function() { obs.disconnect(); }, 8000);
+        });
+      })();
     </script>
   </body>
 </html>

@@ -4,22 +4,16 @@
     <meta charset="utf-8">
     <title>Silverene North Corp</title>
     <script>
+      // SPA redirect for React Router — but ONLY for paths without a file extension
+      // Paths like /ai-search-visibility.html should be served directly by GitHub Pages
       var path = window.location.pathname;
-      // Allow blog article pages to load directly
-      var blogPages = [
-        '/blog/ai-search-visibility.html',
-        '/blog/chatgpt-recommends-competitors.html',
-        '/blog/ai-guilt.html',
-        '/blog/google-ai-overviews.html'
-      ];
-      var isBlogPage = blogPages.some(function(p) { return path === p || path.indexOf('/blog/') === 0; });
-      if (!isBlogPage && path !== '/') {
-        // SPA redirect: encode path and redirect to root
-        var q = encodeURIComponent(path + window.location.search);
-        window.location.replace('/?p=' + q + window.location.hash);
+      var hasExtension = path.match(/\.[a-zA-Z0-9]+$/);
+      if (!hasExtension && path !== '/') {
+        // Encode the path into a query param and redirect to root
+        sessionStorage.setItem('redirect', path + window.location.search);
+        window.location.replace('/' + window.location.hash);
       }
     </script>
   </head>
-  <body>
-  </body>
+  <body></body>
 </html>
