@@ -51,6 +51,23 @@
       #case-studies { display: none !important; }
     </style>
 
+    <!-- Hide "More Articles Coming" blog card -->
+    <script>
+      function hideMoreArticles() {
+        var all = document.querySelectorAll('*');
+        for (var i = 0; i < all.length; i++) {
+          if (all[i].childNodes.length === 1 && all[i].textContent.trim() === 'More Articles Coming') {
+            var card = all[i].closest('a, article, div[class]');
+            if (card) { card.style.display = 'none'; return; }
+          }
+        }
+      }
+      document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(hideMoreArticles, 500);
+        setTimeout(hideMoreArticles, 1500);
+      });
+    </script>
+
     <!-- Schema.org: LocalBusiness -->
     <script type="application/ld+json">
     {
